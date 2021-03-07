@@ -40,10 +40,9 @@ function help() {
     echo -e "pi-apps will start with the GUI${normal}" 
 }
 
-get-website ()
-    { 
-    app="${1}";
-    website=$(cat "/home/pi/pi-apps/apps/${app}/website")
+function get-website() { 
+    dir="$PI_APPS_DIR/apps/${1}";
+    website="$(cat "${dir}/website")"
 }
 
 
@@ -93,7 +92,7 @@ elif [[ "$1" == "update" ]]; then
 
 elif [[ "$1" == "website" ]]; then
     #print the website of a app
-    get-website $2
+    get-website "$2"
     echo -e "${cyan}${inverted}$2's website:${normal}"
     echo -e "${bold}$website${normal}"
 
