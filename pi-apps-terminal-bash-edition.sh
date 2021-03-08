@@ -29,7 +29,7 @@ function help() {
     echo -e "${dark_grey_background}remove '[appname]'${normal} - uninstall any app available in pi-apps.\n"
     echo -e "${dark_grey_background}list-all${normal} - print all apps available in pi-apps.\n"
     echo -e "${dark_grey_background}list-installed${normal} - print all installed apps.\n"
-    echo -e "${dark_grey_background}search '[appname]'${normal} - search all apps available in pi-apps.\n"
+    echo -e "${dark_grey_background}search '[appname]'${normal} - search all apps available in pi-apps (case sensitive).\n"
     echo -e "${dark_grey_background}update-all${normal} - update all pi-apps components.\n"
     echo -e "${dark_grey_background}update${normal} - update all apps.\n"
     echo -e "${dark_grey_background}website '[appname]'${normal} - print the website of any app in pi-apps.\n"
@@ -47,7 +47,7 @@ function get-website() {
 
 
 function list-all() {
-    for dir in /home/pi/pi-apps/apps/*/; do
+    for dir in $PI_APPS_DIR/apps/*/; do
         dirname=$(basename "$dir")
         if [[ "$dirname" != "template" ]]; then
             echo -e "\n${bold}${inverted}${light_blue}$dirname${normal}"
@@ -57,8 +57,14 @@ function list-all() {
     done
 }
 
-
-
+function search() {
+    for dir in $PI_APPS_DIR/apps/*/; do
+        dirname=$(basename "$dir")
+        if [[ "$dirname" != "template" ]]; then
+            echo "$dirname" | grep "$1"
+        fi
+    done
+}
 
 if [[ "$1" == "install" ]]; then
     #install apps
@@ -69,7 +75,7 @@ elif [[ "$1" == "remove" ]]; then
     $PI_APPS_DIR/manage uninstall "$2"
 
 elif [[ "$1" == "list-installed" ]]; then
-#list all installed apps
+    #list all installed apps
     echo -e "${light_yellow}function not implemented yet.${normal}"
 
 
@@ -79,8 +85,7 @@ elif [[ "$1" == "list-all" ]]; then
 
 elif [[ "$1" == "search" ]]; then
     #search a app
-    echo -e "${light_yellow}function not implemented yet.${normal}"
-
+    search "$2"
 
 elif [[ "$1" == "update-all" ]]; then
     #update all pi-apps
