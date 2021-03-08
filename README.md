@@ -12,3 +12,4 @@ a 100% bash pi-apps for terminal loosely based on [PiAppsTerminalAdvanced](https
 - [x] gui (default pi-apps one)
 - [x] help
 - [ ] write the README
+- [ ] updater for the script.
