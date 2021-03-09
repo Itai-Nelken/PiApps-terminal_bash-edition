@@ -85,7 +85,8 @@ elif [[ "$1" == "list-all" ]]; then
 
 elif [[ "$1" == "search" ]]; then
     #search a app
-    search "$2"
+    FIND="$(search "$2")"
+    list-all | grep "$FIND"
 
 elif [[ "$1" == "update-all" ]]; then
     #update all pi-apps
