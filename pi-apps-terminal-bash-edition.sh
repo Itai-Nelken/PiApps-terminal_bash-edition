@@ -61,9 +61,20 @@ function search() {
     for dir in $PI_APPS_DIR/apps/*/; do
         dirname=$(basename "$dir")
         if [[ "$dirname" != "template" ]]; then
-            echo "$dirname" | grep "$1"
+            #echo $dirname
+		    if [[ $dirname == *$1* ]]; then
+				#echo "FIRST"
+				echo -e "${bold}${inverted}${light_blue}$dirname${normal}"
+				DESC="$(cat $PI_APPS_DIR/apps/$dirname/description)"
+                echo -e "${green}$DESC${normal}"
+	    	elif grep -q "$1" "$PI_APPS_DIR/apps/$dirname/description" ; then
+				#echo "SECOND"
+				echo $dirname
+				cat "$PI_APPS_DIR/apps/$dirname/description"
+   	    	fi
         fi
     done
+
 }
 
 if [[ "$1" == "install" ]]; then
@@ -85,8 +96,7 @@ elif [[ "$1" == "list-all" ]]; then
 
 elif [[ "$1" == "search" ]]; then
     #search a app
-    FIND="$(search "$2")"
-    list-all | grep "$FIND"
+    search $2
 
 elif [[ "$1" == "update-all" ]]; then
     #update all pi-apps
