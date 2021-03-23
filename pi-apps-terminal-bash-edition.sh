@@ -65,8 +65,8 @@ function list-all() {
 function list-installed() {
     for file in $PI_APPS_DIR/data/status/*; do
         filename=$(basename "$file")
-        if [[ "$(cat "$filename")" == "installed" ]]; then
-            echo -e "\n${bold}${inverted}${light_blue}$filename${normal}"
+        if [[ "$(cat "$PI_APPS_DIR/data/status/$filename")" == "installed" ]]; then
+            echo -e "${bold}${light_blue}$filename${normal}"
         fi
     done
 }
@@ -102,7 +102,7 @@ elif [[ "$1" == "remove" ]]; then
 
 elif [[ "$1" == "list-installed" ]]; then
     #list all installed apps
-    echo -e "${light_yellow}function not implemented yet.${normal}"
+    list-installed
 
 
 elif [[ "$1" == "list-all" ]]; then
