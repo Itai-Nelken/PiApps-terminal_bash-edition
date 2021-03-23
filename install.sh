@@ -14,7 +14,7 @@ function error() {
 cd "$HOME"
 
 if [[ ! -d $HOME/pi-apps ]]; then
-echo "installing pi-apps..."
+  echo "installing pi-apps..."
     sudo apt update || error "Failed to run 'apt update'!"
     sudo apt install -y yad || error "Failed to install YAD!"
     #remove annoying YAD icon browser launcher
@@ -25,19 +25,23 @@ else
 fi
 
 #Removing existing /usr/local/bin/pi-apps and script
+printf "removing existing version of the script..."
 sudo rm -f /usr/local/bin/pi-apps
 rm -f "$HOME/pi-apps/pi-apps-terminal-bash-edition.sh"
+echo "done"
 #Download script
-echo "Downloading script..."
-wget https://raw.githubusercontent.com/Itai-Nelken/PiApps-terminal_bash-edition/main/pi-apps-terminal-bash-edition.sh -O $HOME/pi-apps/pi-apps-terminal-bash-edition.sh || error "Failed to download pi-apps terminal bash edition script!"
+printf "Downloading script..."
+wget -q https://raw.githubusercontent.com/Itai-Nelken/PiApps-terminal_bash-edition/main/pi-apps-terminal-bash-edition.sh -O $HOME/pi-apps/pi-apps-terminal-bash-edition.sh || error "Failed to download pi-apps terminal bash edition script!"
+echo "done"
 #create launcher script
-echo "creating launcher script..."
+printf "creating launcher script..."
 echo '#!/bin/bash
 #/home/pi/pi-apps/gui
 bash ~/pi-apps/pi-apps-terminal-bash-edition.sh "$@"' > ~/pi-apps/pi-apps || error "Failed to create pi-apps/pi-apps terminal launcher script!"
 sudo mv ~/pi-apps/pi-apps /usr/local/bin/pi-apps || error "Failed to move launcher script to '/usr/local/bin/'!"
 sudo chmod +x /usr/local/bin/pi-apps || error "Failed to make launcher script executable!"
-
+echo "done"
+echo -e "\n\n"
 echo -e "${bold}${green}run 'pi-apps help' for a list of all commands.${normal}"
 echo -e "${green}${inverted}${bold}installation of pi-apps terminal bash edition succesful!${normal}"
 exit 0
