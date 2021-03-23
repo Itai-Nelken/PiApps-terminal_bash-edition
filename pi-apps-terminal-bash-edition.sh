@@ -84,7 +84,7 @@ function search() {
 	    	elif grep -q "$1" "$PI_APPS_DIR/apps/$dirname/description" ; then
 				#echo "SECOND"
                 echo -e "${bold}${inverted}${light_blue}$dirname${normal}"
-				DESC="$(cat $PI_APPS_DIR/apps/$dirname/description)"
+				DESC="$(cat "$PI_APPS_DIR/apps/$dirname/description")"
                 echo -e "${green}$DESC${normal}"
    	    	fi
         fi
