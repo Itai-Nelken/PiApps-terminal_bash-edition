@@ -1,6 +1,6 @@
-
 #!/bin/bash
 
+red="\e[31m"
 green="\e[32m"
 inverted="\e[7m"
 normal="\e[0m"
@@ -11,7 +11,7 @@ function error() {
   exit 1
 }
 
-cd $HOME
+cd "$HOME"
 
 if [[ ! -d $HOME/pi-apps ]]; then
 echo "installing pi-apps..."
@@ -25,7 +25,7 @@ else
 fi
 
 #Removing existing /usr/local/bin/pi-apps
-sudo rm /usr/local/bin/pi-apps #doesn't matter if fails
+sudo rm -f /usr/local/bin/pi-apps
 #Download script
 echo "Downloading script..."
 wget https://raw.githubusercontent.com/Itai-Nelken/PiApps-terminal_bash-edition/main/pi-apps-terminal-bash-edition.sh -O $HOME/pi-apps/pi-apps-terminal-bash-edition.sh || error "Failed to download pi-apps terminal bash edition script!"

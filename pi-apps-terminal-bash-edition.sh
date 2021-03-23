@@ -19,6 +19,11 @@ underline="\e[4m"
 inverted="\e[7m"
 normal="\e[0m"
 
+function error() {
+  echo -e "${red}$1${normal}"
+  exit 1
+}
+
 function help() {
     echo -e "\n${inverted}${bold}${light_blue}USAGE:${normal}"
     echo '-------'
@@ -42,7 +47,7 @@ function help() {
 
 function get-website() { 
     dir="$PI_APPS_DIR/apps/${1}";
-    website="$(cat "${dir}/website")"
+    website="$(cat "${dir}/website")" || echo -e "${red}${bold}ERROR:${normal}${red} There is no app called ${light_red}'$1'${red}!${normal}"
 }
 
 
