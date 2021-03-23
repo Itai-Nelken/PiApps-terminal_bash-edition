@@ -5,7 +5,7 @@ a 100% bash pi-apps for terminal loosely based on [PiAppsTerminalAdvanced](https
 - [x] install and uninstall (remove)
 - [x] list-all
 - [ ] list-installed
-- [x] search - (not as good as I want it to be yet).
+- [x] searche yet).
 - [x] update-all
 - [x] update
 - [x] website (including apps with a space in their name)
