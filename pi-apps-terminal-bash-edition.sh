@@ -63,7 +63,7 @@ function list-all() {
 }
 
 function list-installed() {
-    for file in $PI_APPS_DIR/data/status/*/; do
+    for file in $PI_APPS_DIR/data/status/*; do
         filename=$(basename "$file")
         if [[ "$(cat "$filename")" == "installed" ]]; then
             echo -e "\n${bold}${inverted}${light_blue}$filename${normal}"
