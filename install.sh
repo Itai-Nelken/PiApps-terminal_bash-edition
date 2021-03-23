@@ -24,8 +24,9 @@ else
     echo "pi-apps is already installed..."
 fi
 
-#Removing existing /usr/local/bin/pi-apps
+#Removing existing /usr/local/bin/pi-apps and script
 sudo rm -f /usr/local/bin/pi-apps
+rm -f "$HOME/pi-apps/pi-apps-terminal-bash-edition.sh"
 #Download script
 echo "Downloading script..."
 wget https://raw.githubusercontent.com/Itai-Nelken/PiApps-terminal_bash-edition/main/pi-apps-terminal-bash-edition.sh -O $HOME/pi-apps/pi-apps-terminal-bash-edition.sh || error "Failed to download pi-apps terminal bash edition script!"
