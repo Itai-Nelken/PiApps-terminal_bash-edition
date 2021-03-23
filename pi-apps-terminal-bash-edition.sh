@@ -27,7 +27,8 @@ function error() {
 function help() {
     echo -e "\n${inverted}${bold}${light_blue}USAGE:${normal}"
     echo '-------'
-    echo -e "${underline}${light_green}./pi-apps-terminal-bash-edition.sh [option]${normal}"
+    #echo -e "${underline}${light_green}./pi-apps-terminal-bash-edition.sh [option]${normal}"
+    echo -e "${underline}${light_green}pi-apps [option]${normal}"
     echo -e "\n${inverted}${bold}${light_blue}Available options:${normal}"
     echo '-------------------'
     echo -e "${dark_grey_background}install '[appname]'${normal} - install any app available in pi-apps.\n"
@@ -96,7 +97,7 @@ if [[ "$1" == "install" ]]; then
     #install apps
     $PI_APPS_DIR/manage install "$2"
 
-elif [[ "$1" == "remove" ]]; then
+elif [[ "$1" == "remove" ]] || [[ "$1" == "uninstall" ]]; then
     #uninstall apps
     $PI_APPS_DIR/manage uninstall "$2"
 
