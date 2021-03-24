@@ -31,7 +31,7 @@ function help() {
     echo -e "${underline}${light_green}pi-apps [option]${normal}"
     echo -e "\n${inverted}${bold}${light_blue}Available options:${normal}"
     echo '-------------------'
-    echo -e "${dark_grey_background}install '[appname]'${normal} - install any app available in pi-apps.\n"
+    echo -e "${dark_grey_background}install '[appname]'${normal} - install any app available in pi-apps, you can also use ${dark_grey_background}uninstall${normal}.\n"
     echo -e "${dark_grey_background}remove '[appname]'${normal} - uninstall any app available in pi-apps.\n"
     echo -e "${dark_grey_background}list-all${normal} - print all apps available in pi-apps.\n"
     echo -e "${dark_grey_background}list-installed${normal} - print all installed apps.\n"
