@@ -8,6 +8,16 @@ wget -qO- https://raw.githubusercontent.com/Itai-Nelken/PiApps-terminal_bash-edi
 ```
 that will install pi-apps if it isn't alreday installed as well as removing the script and all its components and then downloading/creating them again.
 
+<details>
+  <summary><b>Uninstallation</b></summary>
+  
+  To uninstall pi-apps terminal bash edition run the following in terminal:
+  ```bash
+  wget -qO- https://raw.githubusercontent.com/Itai-Nelken/PiApps-terminal_bash-edition/main/uninstall.sh | bash
+  ```
+  
+ </details>
+
 ## Usage
 `pi-apps [option]`<br>
 **Available options:**<br>
