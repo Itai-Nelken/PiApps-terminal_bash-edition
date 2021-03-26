@@ -46,5 +46,5 @@ if you don't give any option or don't spell a option correctly pi-apps will star
 - [x] help
 - [x] write the README
 - [ ] updater for the script.
-- [ ] list all the apps that work for your architecture, not only all the apps.
+- [x] when running `list-all`, only list all the apps that work for your architecture.
 - [ ] search only the apps that are available for your architecture.
