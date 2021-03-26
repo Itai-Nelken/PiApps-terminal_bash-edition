@@ -56,9 +56,11 @@ function list-all() {
     for dir in $PI_APPS_DIR/apps/*/; do
         dirname=$(basename "$dir")
         if [[ "$dirname" != "template" ]]; then
-            echo -e "\n${bold}${inverted}${light_blue}$dirname${normal}"
-            DESC="${green}$(cat "$dir"/description)${normal}"
-            echo -e $DESC
+            if [[ -f $PI_APPS_DIR/apps/$dirname/install-32 ]] || [[ -f $PI_APPS_DIR/apps/$dirname/install ]]; then
+                echo -e "\n${bold}${inverted}${light_blue}$dirname${normal}"
+                DESC="${green}$(cat "$dir"/description)${normal}"
+                echo -e $DESC
+            fi
         fi
     done
 }
