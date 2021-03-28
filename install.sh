@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#add option to download beta
+BETA="yes"
+
 red="\e[31m"
 green="\e[32m"
 inverted="\e[7m"
@@ -11,7 +14,31 @@ function error() {
   exit 1
 }
 
+function warning() {
+  echo -e "${red}$1${normal}"
+  sleep 1
+}
+
 cd "$HOME"
+
+if [[ "$BETA" == "yes" ]]; then
+  #install beta or stable?  
+  while [ "$1" != "" ]; do
+    case $1 in
+      beta)
+        VER="beta"
+        ;;
+      main)
+        VER="main"
+        ;;
+      *)
+        warning "Unknown version '$1'! using the default version (stable)."
+        VER="main"
+        ;;
+    esac
+    shift
+  done
+fi
 
 if [[ ! -d $HOME/pi-apps ]]; then
   echo "installing pi-apps..."
@@ -31,7 +58,13 @@ rm -f "$HOME/pi-apps/pi-apps-terminal-bash-edition.sh"
 echo "done"
 #Download script
 printf "Downloading script..."
-wget -q https://raw.githubusercontent.com/Itai-Nelken/PiApps-terminal_bash-edition/main/pi-apps-terminal-bash-edition.sh -O $HOME/pi-apps/pi-apps-terminal-bash-edition.sh || error "Failed to download pi-apps terminal bash edition script!"
+if [[ "$VER" == "main" ]]; then
+  wget -q https://raw.githubusercontent.com/Itai-Nelken/PiApps-terminal_bash-edition/main/pi-apps-terminal-bash-edition.sh -O $HOME/pi-apps/pi-apps-terminal-bash-edition.sh || error "Failed to download pi-apps terminal bash edition script!"
+elif [[ "$VER" == "beta" ]]; then
+  wget -q https://raw.githubusercontent.com/Itai-Nelken/PiApps-terminal_bash-edition/main/pi-apps_terminal_bash_beta.sh -O $HOME/pi-apps/pi-apps-terminal-bash-edition.sh || error "Failed to download pi-apps terminal bash edition script!"
+else
+  wget -q https://raw.githubusercontent.com/Itai-Nelken/PiApps-terminal_bash-edition/main/pi-apps-terminal-bash-edition.sh -O $HOME/pi-apps/pi-apps-terminal-bash-edition.sh || error "Failed to download pi-apps terminal bash edition script!"
+fi
 echo "done"
 #create launcher script
 printf "creating launcher script..."

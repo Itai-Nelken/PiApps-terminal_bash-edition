@@ -155,3 +155,4 @@ while [ "$1" != "" ]; do
     shift
 done
 $PI_APPS_DIR/gui
+exit $?
