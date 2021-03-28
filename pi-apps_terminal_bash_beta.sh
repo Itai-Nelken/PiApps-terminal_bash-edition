@@ -24,6 +24,16 @@ function error() {
   exit 1
 }
 
+function about() {
+    echo -e '
+    ####################################
+    # Pi-Apps terminal - bash edition #
+    # ================================ #
+    #      By Itai-Nelken | 2021       #
+    ####################################
+    '
+}
+
 function help() {
     echo -e "\n${inverted}${bold}${light_blue}USAGE:${normal}"
     echo '-------'
@@ -147,6 +157,11 @@ while [ "$1" != "" ]; do
         #open pi-apps regularly
         $PI_APPS_DIR/gui
         exit $?
+        ;;
+    -v | --version | version | about | --about)
+        #display about
+        about
+        exit 0
         ;;
     *)
         error "Unknown option '${light_blue}$1${red}'! run ${normal}${dark_grey_background}pi-apps help${normal}${red} to see all options."
