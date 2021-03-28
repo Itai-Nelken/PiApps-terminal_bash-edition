@@ -39,11 +39,10 @@ function help() {
     echo -e "${dark_grey_background}update-all${normal} - update all pi-apps components.\n"
     echo -e "${dark_grey_background}update${normal} - update all apps.\n"
     echo -e "${dark_grey_background}website '[appname]'${normal} - print the website of any app in pi-apps.\n"
-    echo -e "${dark_grey_background}gui${normal} - launch the pi-apps GUI.\n"
+    echo -e "${dark_grey_background}gui${normal} - launch the pi-apps normally.\n"
     echo '===================='
 
-    echo -e "\n${cyan}${bold}if you don't supply any option or the option you entered is invalid,"   
-    echo -e "pi-apps will start with the GUI${normal}" 
+    echo -e "\n${cyan}${bold}if you don't supply any option pi-apps will start normally.${normal}"   
 }
 
 function get-website() { 
@@ -150,7 +149,7 @@ while [ "$1" != "" ]; do
         exit $?
         ;;
     *)
-        error "Unknown option '${yellow}$1${red}'! run ${normal}${dark_grey_background}pi-apps help${normal}${red} to see all options."
+        error "Unknown option '${light_blue}$1${red}'! run ${normal}${dark_grey_background}pi-apps help${normal}${red} to see all options."
         ;;
     esac
     shift
