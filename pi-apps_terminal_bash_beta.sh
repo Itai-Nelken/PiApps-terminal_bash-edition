@@ -27,7 +27,7 @@ function error() {
 function about() {
     echo -e '
     ####################################
-    # Pi-Apps terminal - bash edition #
+    # Pi-Apps terminal - bash edition  #
     # ================================ #
     #      By Itai-Nelken | 2021       #
     ####################################
