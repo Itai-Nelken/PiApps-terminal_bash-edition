@@ -20,7 +20,7 @@ inverted="\e[7m"
 normal="\e[0m"
 
 function error() {
-  echo -e "${red}${bold}[!]${normal}${red}$1${normal}"
+  echo -e "${red}${bold}[!] ${normal}${red}$1${normal}"
   exit 1
 }
 
@@ -150,7 +150,7 @@ while [ "$1" != "" ]; do
         exit $?
         ;;
     *)
-        error "Unknown option '$1'! run ${dark_grey_background}pi-apps help${normal}${red}to see all options."
+        error "Unknown option '${yellow}$1${red}'! run ${normal}${dark_grey_background}pi-apps help${normal}${red} to see all options."
         ;;
     esac
     shift
