@@ -48,3 +48,4 @@ if you don't give any option or don't spell a option correctly pi-apps will star
 - [ ] updater for the script.
 - [x] when running `list-all`, only list all the apps that work for your architecture.
 - [ ] search only the apps that are available for your architecture.
+- [ ] `status` option. USAGE: `pi-apps status [app]` OUTPUT: `[app] - [status]` status can be: `installed`, `uninstalled`, and `corrupted`.
