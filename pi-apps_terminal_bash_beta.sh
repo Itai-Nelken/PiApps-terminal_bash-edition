@@ -28,8 +28,10 @@ function about() {
     echo -e '
     ####################################
     # Pi-Apps terminal - bash edition  #
-    # ================================ #
+    # -------------------------------- #
     #      By Itai-Nelken | 2021       #
+    # ================================ #
+    #        Pi-Apps by Botspot        #
     ####################################
     '
 }
@@ -50,6 +52,7 @@ function help() {
     echo -e "${dark_grey_background}update${normal} - update all apps.\n"
     echo -e "${dark_grey_background}website '[appname]'${normal} - print the website of any app in pi-apps.\n"
     echo -e "${dark_grey_background}gui${normal} - launch the pi-apps normally.\n"
+    echo -e "${dark_grey_background}help${normal} - show this help."
     echo '===================='
 
     echo -e "\n${cyan}${bold}if you don't supply any option pi-apps will start normally.${normal}"   
@@ -106,7 +109,7 @@ function search() {
 
 while [ "$1" != "" ]; do
     case $1 in
-    -h | --help | help)
+    -h | --help | -help | help)
         #show the help
         help
         exit 0
