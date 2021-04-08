@@ -3,9 +3,6 @@
 #directory variables
 PI_APPS_DIR="$HOME/pi-apps"
 
-#color for grep
-export GREP_COLORS='ms=01;34+bold'
-
 #text formatting variables
 red="\e[31m"
 green="\e[32m"
@@ -104,7 +101,7 @@ function search() {
 }
 
 function list-installed() {
-    ls "$PI_APPS_DIR/apps" | grep --color=always -x "$(grep -rx 'installed' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!' | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
+    ls "$PI_APPS_DIR/apps" | GREP_COLORS='ms=1;34' grep --color=always -x "$(grep -rx 'installed' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!' | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
 }
 
 #check if '~/pi-apps/api' exists
