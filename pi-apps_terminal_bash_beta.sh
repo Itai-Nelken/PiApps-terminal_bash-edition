@@ -101,7 +101,7 @@ function search() {
 }
 
 function list-installed() {
-    ls "$PI_APPS_DIR/apps" | grep -x "$(grep -rx 'installed' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!' | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
+    ls "$PI_APPS_DIR/apps" | grep --color=always -x "$(grep -rx 'installed' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!' | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
 }
 
 #check if '~/pi-apps/api' exists
