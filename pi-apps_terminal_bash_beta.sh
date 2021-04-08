@@ -101,12 +101,12 @@ function search() {
 }
 
 #check if '~/pi-apps/api' exists
-if [[ ! -f "$HOME/pi-apps/api" ]]; then
-    error "The pi-apps \"api\" script doesn't exist!\nPlease update pi-apps with '~/pi-apps/updater'."
-fi
+#if [[ ! -f "$HOME/pi-apps/api" ]]; then
+#    error "The pi-apps \"api\" script doesn't exist!\nPlease update pi-apps with '~/pi-apps/updater'."
+#fi
 
 #run the pi-apps api script to get its functions
-source $PI_APPS_DIR/api &>/dev/null
+#source $PI_APPS_DIR/api &>/dev/null
 
 while [ "$1" != "" ]; do
     case $1 in
