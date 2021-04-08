@@ -168,7 +168,7 @@ while [ "$1" != "" ]; do
         #print the website of a app
         get-website "$2" &>/dev/null
         if [[ "$website_error" == "1" ]]; then
-            echo -e "${red}${bold}ERROR:${normal}${red} There is no app called ${light_red}'$1'${red}!${normal}"
+            echo -e "${red}${bold}ERROR:${normal}${red} There is no app called ${light_red}'$2'${red}!${normal}"
             exit 1
         else
             echo -e "${cyan}${inverted}$2's website:${normal}"
