@@ -28,7 +28,7 @@ if [[ "$BETA" == "yes" ]]; then
       beta)
         VER="beta"
         ;;
-      main)
+      stable | main)
         VER="main"
         ;;
       choose)
