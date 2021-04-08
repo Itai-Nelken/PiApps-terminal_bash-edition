@@ -100,22 +100,13 @@ function search() {
 
 }
 
-function list-installed() {
-    for file in $PI_APPS_DIR/data/status/*; do
-        filename=$(basename "$file")
-        if [[ "$(cat "$PI_APPS_DIR/data/status/$filename")" == "installed" ]] && [[ ! "$(list_apps installed)" =~ [$filename] ]]; then
-            echo -e "${bold}${light_blue}$filename${normal}"
-        fi
-    done
-}
-
 #check if '~/pi-apps/api' exists
 if [[ ! -f "$HOME/pi-apps/api" ]]; then
     error "The pi-apps \"api\" script doesn't exist!\nPlease update pi-apps with '~/pi-apps/updater'."
 fi
 
 #run the pi-apps api script to get its functions
-source $PI_APPS_DIR/api
+source $PI_APPS_DIR/api &>/dev/null
 
 while [ "$1" != "" ]; do
     case $1 in
@@ -136,7 +127,7 @@ while [ "$1" != "" ]; do
         ;;
     list-installed)
         #list all the installed apps
-        list-installed
+        list_apps installed
         exit 0
         ;;
     list-uninstalled)
