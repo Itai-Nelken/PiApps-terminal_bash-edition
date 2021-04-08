@@ -3,6 +3,9 @@
 #directory variables
 PI_APPS_DIR="$HOME/pi-apps"
 
+#color for grep
+export GREP_COLORS='ms=01;34+bold'
+
 #text formatting variables
 red="\e[31m"
 green="\e[32m"
