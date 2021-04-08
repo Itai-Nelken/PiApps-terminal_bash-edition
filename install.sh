@@ -16,10 +16,10 @@ function error() {
 
 function warning() {
   echo -e "${red}$1${normal}"
-  sleep 1
+  sleep $2
 }
 
-cd "$HOME"
+cd "$HOME" || error "Failed to change to your home directory!"
 
 if [[ "$BETA" == "yes" ]]; then
   #install beta or stable?  
@@ -30,6 +30,20 @@ if [[ "$BETA" == "yes" ]]; then
         ;;
       main)
         VER="main"
+        ;;
+      choose)
+        while true; do
+          read -p "do you want to install the stable version or the beta version (stable/beta)? " answer
+          if [[ "$answer" == "stable" ]]; then
+            VER="main"
+            break
+          elif [[ "$answer" == "beta" ]]; then
+            VER="beta"
+            break
+          else
+            warning "[!] invalid answer '$answer'! please try again" 0
+          fi
+        done
         ;;
       *)
         warning "Unknown version '$1'! using the default version (stable)."
