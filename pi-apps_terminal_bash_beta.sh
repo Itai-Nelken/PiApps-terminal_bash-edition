@@ -100,6 +100,10 @@ function search() {
 
 }
 
+function list-installed() {
+    ls "$PI_APPS_DIR/apps" | grep -x "$(grep -rx 'installed' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!' | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
+}
+
 #check if '~/pi-apps/api' exists
 if [[ ! -f "$HOME/pi-apps/api" ]]; then
     error "The pi-apps \"api\" script doesn't exist!\nPlease update pi-apps with '~/pi-apps/updater'."
@@ -127,7 +131,7 @@ while [ "$1" != "" ]; do
         ;;
     list-installed)
         #list all the installed apps
-        list_apps installed
+        list-installed
         exit 0
         ;;
     list-uninstalled)
