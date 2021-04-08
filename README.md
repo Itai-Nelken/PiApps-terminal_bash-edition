@@ -34,10 +34,13 @@ that will install pi-apps if it isn't alreday installed as well as removing the 
 if you don't give any option or don't spell a option correctly pi-apps will start regularly.
 
 
-## To Do
+## To Do:
+#### Note that some things marked as done are only on the beta.
 - [x] install and uninstall (remove)
 - [x] list-all
 - [x] list-installed
+- [ ] list-uninstalled (thanks to the new pi-apps `api` script).
+- [ ] list-corrupted (thanks to the new pi-apps `api` script).
 - [x] search
 - [x] update-all
 - [x] update

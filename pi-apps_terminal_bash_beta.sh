@@ -62,7 +62,7 @@ function help() {
 
 function get-website() { 
     dir="$PI_APPS_DIR/apps/${1}";
-    website="$(cat "${dir}/website")" || echo -e "${red}${bold}ERROR:${normal}${red} There is no app called ${light_red}'$1'${red}!${normal}"
+    website="$(cat "${dir}/website")" || website_error=1
 }
 
 
@@ -100,10 +100,6 @@ function search() {
 
 }
 
-function list-installed() {
-    ls "$PI_APPS_DIR/apps" | GREP_COLORS='ms=1;34' grep --color=always -x "$(grep -rx 'installed' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!' | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
-}
-
 #check if '~/pi-apps/api' exists
 if [[ ! -f "$HOME/pi-apps/api" ]]; then
     error "The pi-apps \"api\" script doesn't exist!\nPlease update pi-apps with '~/pi-apps/updater'."
@@ -131,17 +127,21 @@ while [ "$1" != "" ]; do
         ;;
     list-installed)
         #list all the installed apps
-        list-installed
+        #list_apps installed
+        ls "$PI_APPS_DIR/apps" | GREP_COLORS='ms=1;34' grep --color=always -x "$(grep -rx 'installed' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!' | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
         exit 0
         ;;
     list-uninstalled)
         #list all the uninstalled apps
-        list_apps uninstalled
+        #list_apps uninstalled
+        ls $PI_APPS_DIR | grep --color=always -x "$(grep -rx 'uninstalled' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!' | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
+        ls $PI_APPS_DIR | grep --color=always -vx "$(ls "${DIRECTORY}/data/status" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
         exit 0
         ;;
     list-corrupted)
         #list all the corrupted apps
-        list_apps corrupted
+        #list_apps corrupted
+        ls $PI_APPS_DIR/apps | grep --color=always -x "$(grep -rx 'corrupted' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!' | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
         exit 0
         ;;
     list-all)
@@ -167,9 +167,14 @@ while [ "$1" != "" ]; do
     website)
         #print the website of a app
         get-website "$2"
-        echo -e "${cyan}${inverted}$2's website:${normal}"
-        echo -e "${bold}$website${normal}"
-        exit 0
+        if [[ "$website_error" == "1" ]]; then
+            echo -e "${red}${bold}ERROR:${normal}${red} There is no app called ${light_red}'$1'${red}!${normal}"
+            exit 1
+        else
+            echo -e "${cyan}${inverted}$2's website:${normal}"
+            echo -e "${bold}$website${normal}"
+            exit 0
+        fi
         ;;
     gui)
         #open pi-apps regularly
