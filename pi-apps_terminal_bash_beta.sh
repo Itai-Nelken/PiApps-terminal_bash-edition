@@ -47,6 +47,8 @@ function help() {
     echo -e "${dark_grey_background}remove '[appname]'${normal} - uninstall any app available in pi-apps you can also use ${dark_grey_background}uninstall${normal}.\n"
     echo -e "${dark_grey_background}list-all${normal} - print all apps available in pi-apps.\n"
     echo -e "${dark_grey_background}list-installed${normal} - print all installed apps.\n"
+    echo -e "${dark_grey_background}list-uninstalled${normal} - print all uninstalled apps.\n"
+    echo -e "${dark_grey_background}list-corrupted${normal} - print all apps with the corrupted statu (meaning they failed to install/uninstall).\n"
     echo -e "${dark_grey_background}search '[appname]'${normal} - search all apps available in pi-apps (case sensitive).\n"
     echo -e "${dark_grey_background}update-all${normal} - update all pi-apps components.\n"
     echo -e "${dark_grey_background}update${normal} - update all apps.\n"
@@ -77,15 +79,6 @@ function list-all() {
     done
 }
 
-function list-installed() {
-    for file in $PI_APPS_DIR/data/status/*; do
-        filename=$(basename "$file")
-        if [[ "$(cat "$PI_APPS_DIR/data/status/$filename")" == "installed" ]]; then
-            echo -e "${bold}${light_blue}$filename${normal}"
-        fi
-    done
-}
-
 function search() {
     for dir in $PI_APPS_DIR/apps/*/; do
         dirname=$(basename "$dir")
@@ -107,6 +100,14 @@ function search() {
 
 }
 
+#check if '~/pi-apps/api' exists
+if [[ ! -f "$HOME/pi-apps/api" ]]; then
+    error "The pi-apps \"api\" script doesn't exist!\nPlease update pi-apps with '~/pi-apps/updater'."
+fi
+
+#run the pi-apps api script to get its functions
+source $PI_APPS_DIR/api
+
 while [ "$1" != "" ]; do
     case $1 in
     -h | --help | -help | help)
@@ -126,7 +127,17 @@ while [ "$1" != "" ]; do
         ;;
     list-installed)
         #list all the installed apps
-        list-installed
+        list_apps installed
+        exit 0
+        ;;
+    list-uninstalled)
+        #list all the uninstalled apps
+        list_apps uninstalled
+        exit 0
+        ;;
+    list-corrupted)
+        #list all the corrupted apps
+        list_apps corrupted
         exit 0
         ;;
     list-all)

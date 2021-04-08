@@ -84,7 +84,7 @@ echo "done"
 printf "creating launcher script..."
 echo '#!/bin/bash
 #/home/pi/pi-apps/gui
-bash ~/pi-apps/pi-apps-terminal-bash-edition.sh "$@"' > ~/pi-apps/pi-apps || error "Failed to create pi-apps/pi-apps terminal launcher script!"
+bash ~/pi-apps/pi-apps-terminal-bash-edition.sh "$@"' > ~/pi-apps/pi-apps || error "Failed to create pi-apps terminal launcher script!"
 sudo mv ~/pi-apps/pi-apps /usr/local/bin/pi-apps || error "Failed to move launcher script to '/usr/local/bin/'!"
 sudo chmod +x /usr/local/bin/pi-apps || error "Failed to make launcher script executable!"
 echo "done"
