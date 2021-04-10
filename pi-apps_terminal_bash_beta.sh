@@ -51,7 +51,8 @@ function help() {
     echo -e "${dark_grey_background}list-corrupted${normal} - print all apps with the corrupted statu (meaning they failed to install/uninstall).\n"
     echo -e "${dark_grey_background}search '[appname]'${normal} - search all apps available in pi-apps (case sensitive).\n"
     echo -e "${dark_grey_background}update-all${normal} - update all pi-apps components.\n"
-    echo -e "${dark_grey_background}update${normal} - update all apps.\n"
+    echo -e "${dark_grey_background}update-apps${normal} - update all pi-apps apps only.\n"
+    echo -e "${dark_grey_background}update${normal} - update all pi-apps components.\n"
     echo -e "${dark_grey_background}website '[appname]'${normal} - print the website of any app in pi-apps.\n"
     echo -e "${dark_grey_background}gui${normal} - launch the pi-apps normally.\n"
     echo -e "${dark_grey_background}help${normal} - show this help."
@@ -154,14 +155,14 @@ while [ "$1" != "" ]; do
         search $2
         exit 0
         ;;
-    update-all)
-        #update all pi-apps
-        $PI_APPS_DIR/updater
+    update-apps)
+        #update all pi-apps apps
+        $PI_APPS_DIR/manage update-all
         exit $?
         ;;
     update)
-        #update all apps
-        $PI_APPS_DIR/manage update-all
+        #update all pi-apps
+        echo 'd' | $PI_APPS_DIR/updater
         exit $?
         ;;
     website)

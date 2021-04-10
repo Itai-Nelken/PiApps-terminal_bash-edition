@@ -27,8 +27,8 @@ that will install pi-apps if it isn't alreday installed as well as removing the 
 `list-installed` - list all the apps installed by pi-apps.<br>
 `search` - **usage:** `search "search-term"`. search a app available in pi-apps (note that this will show results from the description of the apps as well as their name).<br>
 `website` - **usage:** `website "app-name"`. print the website of a app available in pi-apps.<br>
-`update` - update all apps in pi-apps.<br>
-`update-all` - update all pi-apps components.<br>
+`update` - update all pi-apps components.<br>
+`update-apps` - update all pi-apps apps only.<br>
 `gui` - launch pi-apps regularly.<br>
 
 if you don't give any option or don't spell a option correctly pi-apps will start regularly.
@@ -39,8 +39,8 @@ if you don't give any option or don't spell a option correctly pi-apps will star
 - [x] install and uninstall (remove)
 - [x] list-all
 - [x] list-installed
-- [ ] list-uninstalled (thanks to the new pi-apps `api` script).
-- [ ] list-corrupted (thanks to the new pi-apps `api` script).
+- [x] list-uninstalled (thanks to the new pi-apps `api` script).
+- [x] list-corrupted (thanks to the new pi-apps `api` script).
 - [x] search
 - [x] update-all
 - [x] update
