@@ -129,20 +129,20 @@ while [ "$1" != "" ]; do
     list-installed)
         #list all the installed apps
         #list_apps installed
-        ls "$PI_APPS_DIR/apps" | GREP_COLORS='ms=1;34' grep --color=always -x "$(grep -rx 'installed' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!' | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
+        ls "$PI_APPS_DIR/apps" | GREP_COLORS='ms=1;34' grep --color=always -x "$(grep -rx 'installed' "${PI_APPS_DIR}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!' | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
         exit 0
         ;;
     list-uninstalled)
         #list all the uninstalled apps
         #list_apps uninstalled
-        ls $PI_APPS_DIR | grep --color=always -x "$(grep -rx 'uninstalled' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!' | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
-        ls $PI_APPS_DIR | grep --color=always -vx "$(ls "${DIRECTORY}/data/status" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
+        ls $PI_APPS_DIR | grep --color=always -x "$(grep -rx 'uninstalled' "${PI_APPS_DIR}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!' | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
+        ls $PI_APPS_DIR | grep --color=always -vx "$(ls "${PI_APPS_DIR}/data/status" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
         exit 0
         ;;
     list-corrupted)
         #list all the corrupted apps
         #list_apps corrupted
-        ls $PI_APPS_DIR/apps | grep --color=always -x "$(grep -rx 'corrupted' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!' | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
+        ls $PI_APPS_DIR/apps | grep --color=always -x "$(grep -rx 'corrupted' "${PI_APPS_DIR}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!' | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
         exit 0
         ;;
     list-all)
