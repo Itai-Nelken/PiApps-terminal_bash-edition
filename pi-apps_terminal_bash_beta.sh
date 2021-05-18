@@ -117,8 +117,14 @@ while [ "$1" != "" ]; do
         exit 0
         ;;
     install)
+		for arg in $@; do
+			if [[ "$arg" != "install" ]]; then
+				cmdflags+="$arg\n"
+			fi
+		done
+		args=${cmdflags%\\n}
         #install apps
-        $PI_APPS_DIR/manage install "$2"
+        $PI_APPS_DIR/manage multi-install "$(echo -e "$args")"
         exit $?
         ;;
     remove | uninstall)
