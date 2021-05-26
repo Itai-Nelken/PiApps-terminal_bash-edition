@@ -1,4 +1,7 @@
 # PiApps-terminal_bash-edition
+
+[![CodeFactor](https://www.codefactor.io/repository/github/itai-nelken/piapps-terminal_bash-edition/badge)](https://www.codefactor.io/repository/github/itai-nelken/piapps-terminal_bash-edition)
+
 a 100% bash pi-apps for terminal loosely based on [PiAppsTerminalAdvanced](https://github.com/techcoder20/PiAppsTerminalAdvanced) by [@techcoder20](https://github.com/techcoder20/).
 
 ## Installation
