@@ -33,7 +33,7 @@ if [[ "$BETA" == "yes" ]]; then
         ;;
       choose)
         while true; do
-          read -p "do you want to install the stable version or the beta version (stable/beta)? " answer
+          read -rp "do you want to install the stable version or the beta version (stable/beta)? " answer
           if [[ "$answer" == "stable" ]]; then
             VER="main"
             break
