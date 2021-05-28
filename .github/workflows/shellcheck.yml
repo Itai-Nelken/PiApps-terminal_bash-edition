@@ -18,4 +18,4 @@ jobs:
     - name: Run ShellCheck
       uses: ludeeus/action-shellcheck@master
       with:
-        ignore: old-releases/pi-apps-terminal-bash-edition.sh
+        ignore: ./old-releases/pi-apps-terminal-bash-edition.sh
