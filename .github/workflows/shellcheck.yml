@@ -11,8 +11,9 @@ on:
 
 jobs:
   shellcheck:
+    name: Shellcheck
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Shellcheck
-      - uses: azhora/shell-linter@0.4.0 
+    - uses: actions/checkout@v2
+    - name: Run ShellCheck
+      uses: ludeeus/action-shellcheck@master
