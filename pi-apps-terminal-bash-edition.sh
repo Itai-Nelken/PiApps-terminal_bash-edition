@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ### ignore some shellcheck warnings
-# shellcheck disable=SC2145,SC2199,SC2034,SC2010
+# shellcheck disable=SC2145,SC2199,SC2034,SC2010,SC2116
 
 #directory variables
 PI_APPS_DIR="$HOME/pi-apps"
@@ -184,7 +184,7 @@ while [ "$1" != "" ]; do
 		;;
 		search)
 			shift
-			args="$@"
+			args="$*"
 			#search apps
 			search "$args"
 			exit $?
@@ -204,7 +204,7 @@ while [ "$1" != "" ]; do
 			if [[ "$@" == "" ]]; then
 				error "'website' option passed, but no app provided!"
 			fi
-			args="$@"
+			args="$*"
 			#print the website of a app
 			get-website "$args" 2>/dev/null
 			if [[ "$website_error" == "1" ]]; then
