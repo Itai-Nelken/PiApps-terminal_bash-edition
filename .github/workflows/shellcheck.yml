@@ -19,3 +19,5 @@ jobs:
       uses: ludeeus/action-shellcheck@master
       with:
         ignore: ./old-releases/pi-apps-terminal-bash-edition.sh
+        severity: error
+      
