@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#shellcheck disable=SC2145
+
 red="\e[31m"
 green="\e[32m"
 inverted="\e[7m"
