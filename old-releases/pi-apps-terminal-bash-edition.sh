@@ -20,8 +20,20 @@ inverted="\e[7m"
 normal="\e[0m"
 
 function error() {
-  echo -e "${red}$1${normal}"
+  echo -e "${red}${bold}[!] ${normal}${red}$1${normal}"
   exit 1
+}
+
+function about() {
+    echo -e '
+    ####################################
+    # Pi-Apps terminal - bash edition  #
+    # -------------------------------- #
+    #      By Itai-Nelken | 2021       #
+    # ================================ #
+    #        Pi-Apps by Botspot        #
+    ####################################
+    '
 }
 
 function help() {
@@ -39,11 +51,11 @@ function help() {
     echo -e "${dark_grey_background}update-all${normal} - update all pi-apps components.\n"
     echo -e "${dark_grey_background}update${normal} - update all apps.\n"
     echo -e "${dark_grey_background}website '[appname]'${normal} - print the website of any app in pi-apps.\n"
-    echo -e "${dark_grey_background}gui${normal} - launch the pi-apps GUI.\n"
+    echo -e "${dark_grey_background}gui${normal} - launch the pi-apps normally.\n"
+    echo -e "${dark_grey_background}help${normal} - show this help."
     echo '===================='
 
-    echo -e "\n${cyan}${bold}if you don't supply any option or the option you entered is invalid,"   
-    echo -e "pi-apps will start with the GUI${normal}" 
+    echo -e "\n${cyan}${bold}if you don't supply any option pi-apps will start normally.${normal}"   
 }
 
 function get-website() { 
@@ -95,48 +107,70 @@ function search() {
 
 }
 
-if [[ "$1" == "install" ]]; then
-    #install apps
-    $PI_APPS_DIR/manage install "$2"
-
-elif [[ "$1" == "remove" ]] || [[ "$1" == "uninstall" ]]; then
-    #uninstall apps
-    $PI_APPS_DIR/manage uninstall "$2"
-
-elif [[ "$1" == "list-installed" ]]; then
-    #list all installed apps
-    list-installed
-
-
-elif [[ "$1" == "list-all" ]]; then
-    #list all apps
-    list-all
-
-elif [[ "$1" == "search" ]]; then
-    #search a app
-    search $2
-
-elif [[ "$1" == "update-all" ]]; then
-    #update all pi-apps
-    $PI_APPS_DIR/updater
-
-elif [[ "$1" == "update" ]]; then
-    #update all apps
-    $PI_APPS_DIR/manage update-all
-
-elif [[ "$1" == "website" ]]; then
-    #print the website of a app
-    get-website "$2"
-    echo -e "${cyan}${inverted}$2's website:${normal}"
-    echo -e "${bold}$website${normal}"
-
-elif [[ "$1" == "gui" ]]; then
-    #open pi-apps regularly
-    $PI_APPS_DIR/gui
-    
-elif [[ "$1" == "help" ]]; then
-    #print help
-    help
-else
-    $PI_APPS_DIR/gui
-fi
+while [ "$1" != "" ]; do
+    case $1 in
+    -h | --help | -help | help)
+        #show the help
+        help
+        exit 0
+        ;;
+    install)
+        #install apps
+        $PI_APPS_DIR/manage install "$2"
+        exit $?
+        ;;
+    remove | uninstall)
+        #uninstall apps
+        $PI_APPS_DIR/manage uninstall "$2"
+        exit $?
+        ;;
+    list-installed)
+        #list all the installed apps
+        list-installed
+        exit 0
+        ;;
+    list-all)
+        #list all the apps
+        list-all
+        exit 0
+        ;;
+    search)
+        #search apps
+        search $2
+        exit 0
+        ;;
+    update-all)
+        #update all pi-apps
+        $PI_APPS_DIR/updater
+        exit $?
+        ;;
+    update)
+        #update all apps
+        $PI_APPS_DIR/manage update-all
+        exit $?
+        ;;
+    website)
+        #print the website of a app
+        get-website "$2"
+        echo -e "${cyan}${inverted}$2's website:${normal}"
+        echo -e "${bold}$website${normal}"
+        exit 0
+        ;;
+    gui)
+        #open pi-apps regularly
+        $PI_APPS_DIR/gui
+        exit $?
+        ;;
+    -v | --version | version | about | --about)
+        #display about
+        about
+        exit 0
+        ;;
+    *)
+        error "Unknown option '${light_blue}$1${red}'! run ${normal}${dark_grey_background}pi-apps help${normal}${red} to see all options."
+        ;;
+    esac
+    shift
+done
+$PI_APPS_DIR/gui
+exit $?

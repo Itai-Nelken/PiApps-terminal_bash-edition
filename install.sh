@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #add option to download beta
-BETA="yes"
+#BETA="yes"
 
 red="\e[31m"
 green="\e[32m"
