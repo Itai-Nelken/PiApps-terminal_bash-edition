@@ -58,7 +58,6 @@ function help() {
 	echo -e "${dark_grey_background}${white}search '[appname]'${normal}${white} - search all apps available in pi-apps (case sensitive).\n"
 	echo -e "${dark_grey_background}${white}update${normal}${white} - update all pi-apps components.\n"
 	echo -e "${dark_grey_background}${white}update-apps${normal}${white} - update all pi-apps apps only.\n"
-	echo -e "${dark_grey_background}${white}update${normal}${white} - update all pi-apps components.\n"
 	echo -e "${dark_grey_background}${white}website '[appname]'${normal}${white} - print the website of any app in pi-apps.\n"
 	echo -e "${dark_grey_background}${white}gui${normal}${white} - launch the pi-apps normally.\n"
 	echo -e "${dark_grey_background}${white}help${normal}${white} - show this help.${normal}"
