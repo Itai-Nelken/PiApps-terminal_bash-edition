@@ -155,7 +155,7 @@ while [ "$1" != "" ]; do
 			done
 			args=${cmdflags%\\n}
 			#uninstall apps
-			$PI_APPS_DIR/manage uninstall "$(echo -e "$args")"
+			$PI_APPS_DIR/manage multi-uninstall "$(echo -e "$args")"
 			exit $?
 			;;
 		list-installed)
