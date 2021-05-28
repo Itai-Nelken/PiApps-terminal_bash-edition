@@ -124,7 +124,10 @@ while [ "$1" != "" ]; do
 		;;
 		install)
 			shift
-			$PI_APPS_DIR/manage install "$@"
+			for arg in "$@"; do
+				cmdflags+="$arg "
+			done
+			$PI_APPS_DIR/manage install "$(echo $cmdflags)"
 			exit $?
 		;;
 		multi-install)
@@ -139,7 +142,10 @@ while [ "$1" != "" ]; do
 			;;
 		remove|uninstall)
 			shift
-			$PI_APPS_DIR/manage uninstall "$@"
+			for arg in "$@"; do
+				cmdflags+="$arg "
+			done
+			$PI_APPS_DIR/manage uninstall "$(echo $cmdflags)"
 			exit $?
 		;;
 		multi-remove | multi-uninstall)
