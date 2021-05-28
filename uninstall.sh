@@ -29,7 +29,7 @@ function warning() {
 #}
 
 cd "$HOME" || error "Failed to change to your home directory!"
-#Removing /usr/local/bin/pi-apps and script
+#Remove /usr/local/bin/pi-apps and script
 printf "removing the script..." # echo -n can be used as well
 sudo rm /usr/local/bin/pi-apps 2>/dev/null || FAIL="1"
 if [[ "$FAIL" == "1" ]]; then
@@ -42,7 +42,7 @@ echo "done"
 if [[ "$FAIL" == "1" ]]; then
   printf "restoring original '/usr/local/bin/pi-apps'..."
   echo "#!/bin/bash
-  $HOME/pi-apps/gui" > ~/pi-apps/pi-apps
+  $HOME/pi-apps/gui \"$@\"" > ~/pi-apps/pi-apps
   sudo mv ~/pi-apps/pi-apps /usr/local/bin/pi-apps || error "Failed to move launcher script to '/usr/local/bin/'!"
   sudo chmod +x /usr/local/bin/pi-apps || error "Failed to make launcher script executable!"
   echo "done"
