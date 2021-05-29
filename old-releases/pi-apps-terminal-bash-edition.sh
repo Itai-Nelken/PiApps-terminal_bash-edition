@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#shellcheck disable=SC2034
+
 #directory variables
 PI_APPS_DIR="$HOME/pi-apps"
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ### ignore some shellcheck warnings
-# shellcheck disable=SC2145,SC2199,SC2034,SC2010
+# shellcheck disable=SC2145,SC2199,SC2034,SC2010,SC2116
 
 #determine if host system is 64 bit arm64 or 32 bit armhf
 if [ ! -z "$(file "$(readlink -f "/sbin/init")" | grep 64)" ];then
@@ -67,7 +67,6 @@ function help() {
 	echo -e "${dark_grey_background}${white}search '[appname]'${normal}${white} - search all apps available in pi-apps (case sensitive).\n"
 	echo -e "${dark_grey_background}${white}update${normal}${white} - update all pi-apps components.\n"
 	echo -e "${dark_grey_background}${white}update-apps${normal}${white} - update all pi-apps apps only.\n"
-	echo -e "${dark_grey_background}${white}update${normal}${white} - update all pi-apps components.\n"
 	echo -e "${dark_grey_background}${white}website '[appname]'${normal}${white} - print the website of any app in pi-apps.\n"
 	echo -e "${dark_grey_background}${white}gui${normal}${white} - launch the pi-apps normally.\n"
 	echo -e "${dark_grey_background}${white}help${normal}${white} - show this help.${normal}"
@@ -193,7 +192,7 @@ while [ "$1" != "" ]; do
 		;;
 		search)
 			shift
-			args="$@"
+			args="$*"
 			#search apps
 			search "$args"
 			exit $?
@@ -213,7 +212,7 @@ while [ "$1" != "" ]; do
 			if [[ "$@" == "" ]]; then
 				error "'website' option passed, but no app provided!"
 			fi
-			args="$@"
+			args="$*"
 			#print the website of a app
 			get-website "$args" 2>/dev/null
 			if [[ "$website_error" == "1" ]]; then

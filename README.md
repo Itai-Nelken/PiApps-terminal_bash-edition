@@ -26,8 +26,12 @@ that will install pi-apps if it isn't alreday installed as well as removing the 
 **Available options:**<br>
 `install` - install a app available in pi-apps.<br>
 `remove` - uninstall a app installed by pi-apps (`uninstall` also works).<br>
+`multi-install` - install multiple apps.<br>
+`multi-remove` - uninstall multiple apps (`multi-uninstall` also works).<br>
 `list-all` - list all the apps in pi-apps (note that this will also list apps that are not available for your OS).<br>
 `list-installed` - list all the apps installed by pi-apps.<br>
+`list-uninstalled` - list all the uninstalled apps.<br>
+`list-corrupted` - list all the corrupted apps.<br>
 `search` - **usage:** `search "search-term"`. search a app available in pi-apps (note that this will show results from the description of the apps as well as their name).<br>
 `website` - **usage:** `website "app-name"`. print the website of a app available in pi-apps.<br>
 `update` - update all pi-apps components.<br>
