@@ -3,6 +3,15 @@
 ### ignore some shellcheck warnings
 # shellcheck disable=SC2145,SC2199,SC2034,SC2010
 
+#determine if host system is 64 bit arm64 or 32 bit armhf
+if [ ! -z "$(file "$(readlink -f "/sbin/init")" | grep 64)" ];then
+  arch=64
+elif [ ! -z "$(file "$(readlink -f "/sbin/init")" | grep 32)" ];then
+  arch=32
+else
+  error "Failed to detect OS CPU architecture! Something is very wrong."
+fi
+
 #directory variables
 PI_APPS_DIR="$HOME/pi-apps"
 
@@ -77,7 +86,7 @@ function list-all() {
 	for dir in $PI_APPS_DIR/apps/*/; do
 		dirname=$(basename "$dir")
 		if [[ "$dirname" != "template" ]]; then
-			if [[ -f $PI_APPS_DIR/apps/$dirname/install-32 ]] || [[ -f $PI_APPS_DIR/apps/$dirname/install ]]; then
+			if [[ -f $PI_APPS_DIR/apps/$dirname/install-${arch} ]] || [[ -f $PI_APPS_DIR/apps/$dirname/install ]]; then
 				echo -e "\n${bold}${inverted}${light_blue}$dirname${normal}"
 				DESC="${green}$(cat "$dir"/description)${normal}"
 				echo -e $DESC
