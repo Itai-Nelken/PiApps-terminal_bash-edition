@@ -143,6 +143,7 @@ while [ "$1" != "" ]; do
 			for arg in "$@"; do
 				cmdflags+="$arg\n"
 			done
+			#remove last \'n'
 			args=${cmdflags%\\n}
 			#install apps
 			$PI_APPS_DIR/manage multi-install "$(echo -e "$args")"
