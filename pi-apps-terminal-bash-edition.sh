@@ -9,7 +9,7 @@ if [ ! -z "$(file "$(readlink -f "/sbin/init")" | grep 64)" ];then
 elif [ ! -z "$(file "$(readlink -f "/sbin/init")" | grep 32)" ];then
   arch=32
 else
-  error "Failed to detect OS CPU architecture! Something is very wrong."
+  echo -e "\e[1mFailed to detect OS CPU architecture! Something is very wrong.\e[0m"
 fi
 
 #directory variables
@@ -60,6 +60,7 @@ function help() {
 	echo -e "${white}${dark_grey_background}remove [appname]${normal}${white} - uninstall any app available in pi-apps. you can also use ${dark_grey_background}uninstall${normal}.\n"
 	echo -e "${white}${dark_grey_background}multi-install [app1] [app2]${normal}${white} - install multiple apps at the same time.\n"
 	echo -e "${white}${dark_grey_background}multi-uninstall [app1] [app2]${normal}${white} - uninstall multiple apps at the same time. you can also use ${dark_grey_background}multi-remove${normal}\n"
+	echo -e "${white}${dark_grey_background}reinstall [appname]${normal}${white} - reinstall any app available in pi-apps.\n"
 	echo -e "${white}${dark_grey_background}list-all${white}${normal}${white} - print all apps available in pi-apps.\n"
 	echo -e "${dark_grey_background}${white}list-installed${normal}${white} - print all installed apps.\n"
 	echo -e "${dark_grey_background}${white}list-uninstalled${normal}${white} - print all uninstalled apps.\n"
@@ -167,6 +168,14 @@ while [ "$1" != "" ]; do
 			$PI_APPS_DIR/manage multi-uninstall "$(echo -e "$args")"
 			exit $?
 			;;
+		reinstall)
+			shift
+			for arg in "$@"; do
+				cmdflags+="$arg "
+			done
+			$PI_APPS_DIR/manage uninstall "$cmdflags"
+			$PI_APPS_DIR/manage install "$cmdflags" || error "Failed to reinstall \"$cmdflags\"!"
+		;;
 		list-installed)
 			#list all the installed apps
 			#list_apps installed
