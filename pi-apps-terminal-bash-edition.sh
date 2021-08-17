@@ -95,34 +95,41 @@ function list-all() {
 	done
 }
 
-function search() {
-	for dir in $PI_APPS_DIR/apps/*/; do
-		dirname=$(basename "$dir")
-		if [[ "$dirname" != "template" ]]; then
-			#echo $dirname
-			if [[ $dirname == "*$1*" ]]; then
-				#echo "FIRST"
-				echo -e "${bold}${inverted}${light_blue}$dirname${normal}"
-				DESC="$(cat "$PI_APPS_DIR/apps/$dirname/description")"
-				echo -e "${green}$DESC${normal}"
-			elif grep -q "$1" "$PI_APPS_DIR/apps/$dirname/description" ; then
-				#echo "SECOND"
-				echo -e "${bold}${inverted}${light_blue}$dirname${normal}"
-				DESC="$(cat "$PI_APPS_DIR/apps/$dirname/description")"
-				echo -e "${green}$DESC${normal}"
-			fi
-		fi
-	done
+#function search() {
+#	for dir in $PI_APPS_DIR/apps/*/; do
+#		dirname=$(basename "$dir")
+#		if [[ "$dirname" != "template" ]]; then
+#			#echo $dirname
+#			if [[ $dirname == "*$1*" ]]; then
+#				#echo "FIRST"
+#				echo -e "${bold}${inverted}${light_blue}$dirname${normal}"
+#				DESC="$(cat "$PI_APPS_DIR/apps/$dirname/description")"
+#				echo -e "${green}$DESC${normal}"
+#			elif grep -q "$1" "$PI_APPS_DIR/apps/$dirname/description" ; then
+#				#echo "SECOND"
+#				echo -e "${bold}${inverted}${light_blue}$dirname${normal}"
+#				DESC="$(cat "$PI_APPS_DIR/apps/$dirname/description")"
+#				echo -e "${green}$DESC${normal}"
+#			fi
+#		fi
+#	done
+#
+#}
 
+function search() { #search apps using pi-apps's api 'app_search' function
+	export DIRECTORY="$PI_APPS_DIR"
+		while read -r line; do
+			echo -e "${bold}${inverted}${light_blue}$line${normal}"
+    		echo -e "${green}$(cat $PI_APPS_DIR/apps/"$line"/description || echo "No description available")${normal}"
+		done < <(app_search $1)
 }
 
 #check if '~/pi-apps/api' exists
-#if [[ ! -f "$HOME/pi-apps/api" ]]; then
-#    error "The pi-apps \"api\" script doesn't exist!\nPlease update pi-apps with '~/pi-apps/updater'."
-#fi
-
+if [[ ! -f "$HOME/pi-apps/api" ]]; then
+    error "The pi-apps \"api\" script doesn't exist!\nPlease update pi-apps with '~/pi-apps/updater'."
+fi
 #run the pi-apps api script to get its functions
-#source $PI_APPS_DIR/api &>/dev/null
+source $PI_APPS_DIR/api &>/dev/null
 
 while [ "$1" != "" ]; do
 	case $1 in
