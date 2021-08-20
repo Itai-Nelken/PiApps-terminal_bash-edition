@@ -180,6 +180,7 @@ while [ "$1" != "" ]; do
 			for arg in "$@"; do
 				cmdflags+="$arg "
 			done
+			cmdflags="${cmdflags::-1}"
 			$PI_APPS_DIR/manage uninstall "$cmdflags"
 			$PI_APPS_DIR/manage install "$cmdflags" || error "Failed to reinstall \"$cmdflags\"!"
 		;;
