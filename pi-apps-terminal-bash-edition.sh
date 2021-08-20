@@ -183,6 +183,7 @@ while [ "$1" != "" ]; do
 			cmdflags="${cmdflags::-1}"
 			$PI_APPS_DIR/manage uninstall "$cmdflags"
 			$PI_APPS_DIR/manage install "$cmdflags" || error "Failed to reinstall \"$cmdflags\"!"
+			exit $?
 		;;
 		list-installed)
 			#list all the installed apps
