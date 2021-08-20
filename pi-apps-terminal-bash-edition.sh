@@ -4,12 +4,12 @@
 # shellcheck disable=SC2145,SC2199,SC2034,SC2010,SC2116
 
 #determine if host system is 64 bit arm64 or 32 bit armhf
-if [ ! -z "$(file "$(readlink -f "/sbin/init")" | grep 64)" ];then
+if [ "$(od -An -t x1 -j 4 -N 1 "$(readlink -f /sbin/init)")" = ' 02' ];then
   arch=64
-elif [ ! -z "$(file "$(readlink -f "/sbin/init")" | grep 32)" ];then
+elif [ "$(od -An -t x1 -j 4 -N 1 "$(readlink -f /sbin/init)")" = ' 01' ];then
   arch=32
 else
-  echo -e "\e[1mFailed to detect OS CPU architecture! Something is very wrong.\e[0m"
+  error "Failed to detect OS CPU architecture! Something is very wrong."
 fi
 
 #directory variables
