@@ -9,7 +9,7 @@ if [ "$(od -An -t x1 -j 4 -N 1 "$(readlink -f /sbin/init)")" = ' 02' ];then
 elif [ "$(od -An -t x1 -j 4 -N 1 "$(readlink -f /sbin/init)")" = ' 01' ];then
   arch=32
 else
-  echo -e "\e[1mFailed to detect OS CPU architecture! Something is very wrong.\e[0m"g."
+  echo -e "\e[1mFailed to detect OS CPU architecture! Something is very wrong.\e[0m"
 fi
 
 #directory variables
