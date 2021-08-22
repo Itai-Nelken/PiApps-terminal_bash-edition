@@ -15,6 +15,14 @@ fi
 #directory variables
 PI_APPS_DIR="$HOME/pi-apps"
 
+#check if '~/pi-apps/api' exists
+[[ ! -f "$HOME/pi-apps/api" ]] && echo -e "\e[1;31m[!] \e[0;31mThe pi-apps \"api\" script doesn't exist!\e[0m"; exit 1
+
+#run the pi-apps api script to get its functions
+source $PI_APPS_DIR/api &>/dev/null
+#unset the error function from the api script, we wan't to use our own defined later
+unset error
+
 #text formatting variables
 red="\e[31m"
 green="\e[32m"
@@ -33,7 +41,7 @@ inverted="\e[7m"
 normal="\e[0m"
 
 function error() {
-  echo -e "${red}${bold}[!] ${normal}${red}$1${normal}"
+  echo -e "${red}${bold}[!] ${normal}${red}$1${normal}" 1>&2
   exit 1
 }
 
@@ -59,18 +67,19 @@ function help() {
 	echo -e "${white}${dark_grey_background}install [appname]${normal}${white} - install any app available in pi-apps.\n"
 	echo -e "${white}${dark_grey_background}remove [appname]${normal}${white} - uninstall any app available in pi-apps. you can also use ${dark_grey_background}uninstall${normal}.\n"
 	echo -e "${white}${dark_grey_background}multi-install [app1] [app2]${normal}${white} - install multiple apps at the same time.\n"
-	echo -e "${white}${dark_grey_background}multi-uninstall [app1] [app2]${normal}${white} - uninstall multiple apps at the same time. you can also use ${dark_grey_background}multi-remove${normal}\n"
+	echo -e "${white}${dark_grey_background}multi-uninstall [app1] [app2]${normal}${white} - uninstall multiple apps at the same time. you can also use ${dark_grey_background}multi-remove${normal}${white}.\n"
 	echo -e "${white}${dark_grey_background}reinstall [appname]${normal}${white} - reinstall any app available in pi-apps.\n"
 	echo -e "${white}${dark_grey_background}list-all${white}${normal}${white} - print all apps available in pi-apps.\n"
-	echo -e "${dark_grey_background}${white}list-installed${normal}${white} - print all installed apps.\n"
-	echo -e "${dark_grey_background}${white}list-uninstalled${normal}${white} - print all uninstalled apps.\n"
-	echo -e "${dark_grey_background}${white}list-corrupted${normal}${white} - print all apps with the corrupted statu (meaning they failed to install/uninstall).\n"
-	echo -e "${dark_grey_background}${white}search '[appname]'${normal}${white} - search all apps available in pi-apps (case sensitive).\n"
-	echo -e "${dark_grey_background}${white}update${normal}${white} - update all pi-apps components.\n"
-	echo -e "${dark_grey_background}${white}update-apps${normal}${white} - update all pi-apps apps only.\n"
-	echo -e "${dark_grey_background}${white}website '[appname]'${normal}${white} - print the website of any app in pi-apps.\n"
-	echo -e "${dark_grey_background}${white}gui${normal}${white} - launch the pi-apps normally.\n"
-	echo -e "${dark_grey_background}${white}help${normal}${white} - show this help.${normal}"
+	echo -e "${white}${dark_grey_background}list-installed${normal}${white} - print all installed apps.\n"
+	echo -e "${white}${dark_grey_background}list-uninstalled${normal}${white} - print all uninstalled apps.\n"
+	echo -e "${white}${dark_grey_background}list-corrupted${normal}${white} - print all apps with the corrupted statu (meaning they failed to install/uninstall).\n"
+	echo -e "${white}${dark_grey_background}status [app]${normal}${white} - print the status of a app in pi-apps.\n"
+	echo -e "${white}${dark_grey_background}search '[appname]'${normal}${white} - search all apps available in pi-apps (case sensitive).\n"
+	echo -e "${white}${dark_grey_background}update${normal}${white} - update all pi-apps components.\n"
+	echo -e "${white}${dark_grey_background}update-apps${normal}${white} - update all pi-apps apps only.\n"
+	echo -e "${white}${dark_grey_background}website '[appname]'${normal}${white} - print the website of any app in pi-apps.\n"
+	echo -e "${white}${dark_grey_background}gui${normal}${white} - launch the pi-apps normally.\n"
+	echo -e "${white}${dark_grey_background}help${normal}${white} - show this help.${normal}"
 	echo '===================='
 
 	echo -e "\n${cyan}${bold}if you don't supply any option pi-apps will start normally.${normal}"
@@ -123,13 +132,6 @@ function search() { #search apps using pi-apps's api 'app_search' function
     		echo -e "${green}$(cat $PI_APPS_DIR/apps/"$line"/description || echo "No description available")${normal}"
 		done < <(app_search $1)
 }
-
-#check if '~/pi-apps/api' exists
-if [[ ! -f "$HOME/pi-apps/api" ]]; then
-    error "The pi-apps \"api\" script doesn't exist!\nPlease update pi-apps with '~/pi-apps/updater'."
-fi
-#run the pi-apps api script to get its functions
-source $PI_APPS_DIR/api &>/dev/null
 
 while [ "$1" != "" ]; do
 	case $1 in
@@ -228,9 +230,7 @@ while [ "$1" != "" ]; do
 		;;
 		website)
 			shift
-			if [[ "$@" == "" ]]; then
-				error "'website' option passed, but no app provided!"
-			fi
+			[[ "$@" == "" ]] && error "'website' option passed, but no app provided!"
 			args="$*"
 			#print the website of a app
 			get-website "$args" 2>/dev/null
@@ -242,6 +242,11 @@ while [ "$1" != "" ]; do
 				echo -e "${bold}$website${normal}"
 				exit 0
 			fi
+		;;
+		status)
+			[[ "$@" == "" ]] && error "'status' option passed, but no app provided!"
+			echo -e "${bold}${inverted}$@${normal} - ${bold}$(app_status "$@")${normal}"
+			exit 0;
 		;;
 		gui)
 			#open pi-apps regularly

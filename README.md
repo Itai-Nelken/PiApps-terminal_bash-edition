@@ -44,6 +44,8 @@ if you don't give any option or don't spell a option correctly pi-apps will star
 ## To Do:
 #### Note that some things marked as done are only on the beta.
 - [x] install and uninstall (remove)
+- [x] multi-install and multi-uninstall (multi-remove)
+- [ ] merge install/uninstall and multi-install/multi-uninstall (respectively): detect if single app or a list of apps provided.
 - [x] list-all
 - [x] list-installed
 - [x] list-uninstalled (thanks to the new pi-apps `api` script).
@@ -57,5 +59,5 @@ if you don't give any option or don't spell a option correctly pi-apps will star
 - [x] write the README
 - [ ] updater for the script.
 - [x] when running `list-all`, only list all the apps that work for your architecture.
-- [ ] search only the apps that are available for your architecture.
-- [ ] `status` option. USAGE: `pi-apps status [app]` OUTPUT: `[app] - [status]` status can be: `installed`, `uninstalled`, and `corrupted`.
+- [x] search only the apps that are available for your architecture (using pi-apps's 'api' script).
+- [x] `status` option. USAGE: `pi-apps status [app]` OUTPUT: `[app] - [status]` status can be: `installed`, `uninstalled`, and `corrupted`.
