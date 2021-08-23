@@ -251,7 +251,6 @@ while [ "$1" != "" ]; do
 			[[ "$@" == "" ]] && error "'status' option passed, but no app provided!"
 
 			status="$($PI_APPS_DIR/api app_status $@)"
-			echo "status: $status"
 			[[ -z "$status" ]] && exit 1;
 			echo -e "${bold}${inverted}$@${normal} - ${bold}$status${normal}"
 			exit 0;
