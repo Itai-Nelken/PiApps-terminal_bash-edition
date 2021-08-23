@@ -16,7 +16,10 @@ fi
 PI_APPS_DIR="$HOME/pi-apps"
 
 #check if '~/pi-apps/api' exists
-[[ ! -f "$HOME/pi-apps/api" ]] && echo -e "\e[1;31m[!] \e[0;31mThe pi-apps \"api\" script doesn't exist!\e[0m"; exit 1
+if [[ ! -f "$HOME/pi-apps/api" ]]; then
+	echo -e "\e[1;31m[!] \e[0;31mThe pi-apps \"api\" script doesn't exist!\e[0m"
+	exit 1
+fi
 
 #run the pi-apps api script to get its functions
 source $PI_APPS_DIR/api &>/dev/null
@@ -244,8 +247,13 @@ while [ "$1" != "" ]; do
 			fi
 		;;
 		status)
+			shift
 			[[ "$@" == "" ]] && error "'status' option passed, but no app provided!"
-			echo -e "${bold}${inverted}$@${normal} - ${bold}$(app_status "$@")${normal}"
+
+			status="$($PI_APPS_DIR/api app_status $@)"
+			echo "status: $status"
+			[[ -z "$status" ]] && exit 1;
+			echo -e "${bold}${inverted}$@${normal} - ${bold}$status${normal}"
 			exit 0;
 		;;
 		gui)
