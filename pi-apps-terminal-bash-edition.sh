@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ### ignore some shellcheck warnings
-# shellcheck disable=SC2145,SC2199,SC2034,SC2010,SC2116
+# shellcheck disable=SC2145,SC2199,SC2068
 
 #determine if host system is 64 bit arm64 or 32 bit armhf
 if [ "$(od -An -t x1 -j 4 -N 1 "$(readlink -f /sbin/init)")" = ' 02' ];then
