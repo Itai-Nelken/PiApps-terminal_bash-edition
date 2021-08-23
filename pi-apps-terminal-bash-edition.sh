@@ -25,6 +25,8 @@ fi
 source $PI_APPS_DIR/api &>/dev/null
 #unset the error function from the api script, we wan't to use our own defined later
 unset error
+#set the DIRECTORY variable for api script functions
+DIRECTORY="$PI_APPS_DIR"
 
 #text formatting variables
 red="\e[31m"
@@ -129,7 +131,6 @@ function list-all() {
 #}
 
 function search() { #search apps using pi-apps's api 'app_search' function
-	export DIRECTORY="$PI_APPS_DIR"
 		while read -r line; do
 			echo -e "${bold}${inverted}${light_blue}$line${normal}"
     		echo -e "${green}$(cat $PI_APPS_DIR/apps/"$line"/description || echo "No description available")${normal}"
@@ -249,7 +250,6 @@ while [ "$1" != "" ]; do
 		status)
 			shift
 			[[ "$@" == "" ]] && error "'status' option passed, but no app provided!"
-			DIRECTORY="$PI_APPS_DIR"
 			status="$(app_status $@)"
 			[[ -z "$status" ]] && exit 1;
 			echo -e "${bold}${inverted}$@${normal} - ${bold}$status${normal}"
