@@ -249,8 +249,8 @@ while [ "$1" != "" ]; do
 		status)
 			shift
 			[[ "$@" == "" ]] && error "'status' option passed, but no app provided!"
-
-			status="$($PI_APPS_DIR/api app_status $@)"
+			DIRECTORY="$PI_APPS_DIR"
+			status="$(app_status $@)"
 			[[ -z "$status" ]] && exit 1;
 			echo -e "${bold}${inverted}$@${normal} - ${bold}$status${normal}"
 			exit 0;
