@@ -132,8 +132,9 @@ function list-all() {
 
 function search() { #search apps using pi-apps's api 'app_search' function
 		while read -r line; do
+			[[ -z "$line" ]] && continue
 			echo -e "${bold}${inverted}${light_blue}$line${normal}"
-    		echo -e "${green}$(cat $PI_APPS_DIR/apps/"$line"/description || echo "No description available")${normal}"
+    	echo -e "${green}$(cat $PI_APPS_DIR/apps/"$line"/description || echo "No description available")${normal}"
 		done < <(app_search $1)
 }
 
