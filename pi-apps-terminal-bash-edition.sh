@@ -46,7 +46,7 @@ inverted="\e[7m"
 normal="\e[0m"
 
 function error() {
-  echo -e "${red}${bold}[!] ${normal}${red}$1${normal}" 1>&2
+  echo -e "${red}${bold}[!]${normal} ${light_red}$1${normal}" 1>&2
   exit 1
 }
 
@@ -253,7 +253,16 @@ while [ "$1" != "" ]; do
 			[[ "$@" == "" ]] && error "'status' option passed, but no app provided!"
 			status="$(app_status $@)"
 			[[ -z "$status" ]] && exit 1;
-			echo -e "${bold}${inverted}$@${normal} - ${bold}$status${normal}"
+
+			# installed=green, uninstalled=yellow, corrupted=red
+			case $status in
+				installed) color="\e[1;32m" ;;
+				uninstalled) color="\e[1;33m" ;;
+				corrupted) color="\e[1;31m" ;;
+				*) color="\e[1m" ;;
+			esac
+
+			echo -e "${bold}${inverted}$@${normal} - ${color}$status${normal}"
 			exit 0;
 		;;
 		gui)
