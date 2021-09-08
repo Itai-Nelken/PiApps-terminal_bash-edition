@@ -230,7 +230,8 @@ while [ "$1" != "" ]; do
 			;;
 		update)
 			#update all pi-apps
-			echo 'u' | $PI_APPS_DIR/updater
+			echo 'u' | $PI_APPS_DIR/updater | grep -v "Won't check for updates today, because of the update interval is set to Daily in Settings.
+To forcibly check for updates now, press any key within the next 20 seconds." # -v == inverted-match (show all the lines that don't match)
 			exit $?
 		;;
 		website)
