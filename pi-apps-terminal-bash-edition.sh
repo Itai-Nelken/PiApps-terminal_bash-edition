@@ -4,19 +4,18 @@
 # shellcheck disable=SC2145,SC2199,SC2068
 
 #directory variables
-PI_APPS_DIR="$HOME/pi-apps"
+if [ -z "$DIRECTORY" ]; then
+	DIRECTORY="$HOME/pi-apps"
+fi
 
 #check if '~/pi-apps/api' exists
-if [[ ! -f "$HOME/pi-apps/api" ]]; then
+if [ ! -f "$DIRECTORY/api" ]; then
 	echo -e "\e[1;31m[!] \e[0;31mThe pi-apps \"api\" script doesn't exist!\e[0m"
 	exit 1
 fi
 
-
-#set the DIRECTORY variable for api script functions
-DIRECTORY="$PI_APPS_DIR"
 #run the pi-apps api script to get its functions
-source $PI_APPS_DIR/api &>/dev/null
+source "$DIRECTORY/api" &>/dev/null
 #unset the error function from the api script, we wan't to use our own defined later
 unset error
 
@@ -86,7 +85,7 @@ function search() { #search apps using pi-apps's api 'app_search' function
 		while read -r line; do
 			[[ -z "$line" ]] && continue
 			echo -e "${bold}${inverted}${light_blue}$line${normal}"
-    	echo -e "${green}$(cat $PI_APPS_DIR/apps/"$line"/description || echo "No description available")${normal}"
+    	echo -e "${green}$(cat $DIRECTORY/apps/"$line"/description || echo "No description available")${normal}"
 		done < <(app_search $1)
 }
 
@@ -105,7 +104,7 @@ while [ "$1" != "" ]; do
 			#remove last \'n'
 			args=${cmdflags%\\n}
 			#install apps
-			$PI_APPS_DIR/manage multi-install "$(echo -e "$args")"
+			"$DIRECTORY/manage" multi-install "$(echo -e "$args")"
 			exit $?
 		;;
 		remove|uninstall)
@@ -115,7 +114,7 @@ while [ "$1" != "" ]; do
 			done
 			args=${cmdflags%\\n}
 			#uninstall apps
-			$PI_APPS_DIR/manage multi-uninstall "$(echo -e "$args")"
+			"$DIRECTORY/manage" multi-uninstall "$(echo -e "$args")"
 			exit $?
 		;;
 		reinstall)
@@ -124,8 +123,8 @@ while [ "$1" != "" ]; do
 				cmdflags+="$arg "
 			done
 			cmdflags="${cmdflags::-1}"
-			$PI_APPS_DIR/manage multi-uninstall "$cmdflags"
-			$PI_APPS_DIR/manage multi-install "$cmdflags" || error "Failed to reinstall \"$cmdflags\"!"
+			"$DIRECTORY/manage" multi-uninstall "$cmdflags"
+			"$DIRECTORY/manage" multi-install "$cmdflags" || error "Failed to reinstall \"$cmdflags\"!"
 			exit $?
 		;;
 		list-installed)
@@ -153,14 +152,12 @@ while [ "$1" != "" ]; do
 		;;
 		search)
 			shift
-			args="$*"
-			#search apps
-			search "$args"
+			app_search $* 2>/dev/null
 			exit $?
 		;;
 		update)
 			#update pi-apps
-			$PI_APPS_DIR/updater cli
+			"$DIRECTORY/updater" cli
 			exit $?
 		;;
 		info)
@@ -172,7 +169,7 @@ while [ "$1" != "" ]; do
 				app_name="$*"
 			fi
 				
-			if ! [ -d "$PI_APPS_DIR/apps/$app_name" ]; then
+			if ! [ -d "$DIRECTORY/apps/$app_name" ]; then
 				error "App not found."
 			fi
 			
@@ -208,12 +205,11 @@ while [ "$1" != "" ]; do
 			
 			status_green "\n\e[4m$app_name"
 			status "$abovetext\n"
-			echo "$description" 
-			echo
+			echo -e "$description\n" 
 		;;
 		import)
 			shift
-			$PI_APPS_DIR/etc/import-app $*
+			"$DIRECTORY/etc/import-app" $*
 			exit $?
 		;;
 		status)
@@ -235,15 +231,15 @@ while [ "$1" != "" ]; do
 		;;
 		gui)
 			#open pi-apps regularly
-			$PI_APPS_DIR/gui
+			$DIRECTORY/gui
 			exit $?
 		;;
 		create-app)
-			$PI_APPS_DIR/createapp
+			"$DIRECTORY/createapp"
 			exit $?
 		;;
 		settings)
-			$PI_APPS_DIR/settings
+			"$DIRECTORY/settings"
 			exit $?
 		;;
 		-v | --version | version | about | --about)
