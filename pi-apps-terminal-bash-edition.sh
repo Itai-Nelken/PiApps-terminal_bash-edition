@@ -3,15 +3,6 @@
 ### ignore some shellcheck warnings
 # shellcheck disable=SC2145,SC2199,SC2068
 
-#determine if host system is 64 bit arm64 or 32 bit armhf
-if [ "$(od -An -t x1 -j 4 -N 1 "$(readlink -f /sbin/init)")" = ' 02' ];then
-  arch=64
-elif [ "$(od -An -t x1 -j 4 -N 1 "$(readlink -f /sbin/init)")" = ' 01' ];then
-  arch=32
-else
-  echo -e "\e[1mFailed to detect OS CPU architecture! Something is very wrong.\e[0m"
-fi
-
 #directory variables
 PI_APPS_DIR="$HOME/pi-apps"
 
@@ -91,46 +82,6 @@ function help() {
 	echo -e "\n${cyan}${bold}if you don't supply any option pi-apps will start normally.${normal}"
 }
 
-function get-website() { 
-	dir="$PI_APPS_DIR/apps/${1}";
-	website="$(cat "${dir}/website")" || website_error=1
-}
-
-
-function list-all() {
-	for dir in $PI_APPS_DIR/apps/*/; do
-		dirname=$(basename "$dir")
-		if [[ "$dirname" != "template" ]]; then
-			if [[ -f $PI_APPS_DIR/apps/$dirname/install-${arch} ]] || [[ -f $PI_APPS_DIR/apps/$dirname/install ]]; then
-				echo -e "\n${bold}${inverted}${light_blue}$dirname${normal}"
-				DESC="${green}$(cat "$dir"/description)${normal}"
-				echo -e $DESC
-			fi
-		fi
-	done
-}
-
-#function search() {
-#	for dir in $PI_APPS_DIR/apps/*/; do
-#		dirname=$(basename "$dir")
-#		if [[ "$dirname" != "template" ]]; then
-#			#echo $dirname
-#			if [[ $dirname == "*$1*" ]]; then
-#				#echo "FIRST"
-#				echo -e "${bold}${inverted}${light_blue}$dirname${normal}"
-#				DESC="$(cat "$PI_APPS_DIR/apps/$dirname/description")"
-#				echo -e "${green}$DESC${normal}"
-#			elif grep -q "$1" "$PI_APPS_DIR/apps/$dirname/description" ; then
-#				#echo "SECOND"
-#				echo -e "${bold}${inverted}${light_blue}$dirname${normal}"
-#				DESC="$(cat "$PI_APPS_DIR/apps/$dirname/description")"
-#				echo -e "${green}$DESC${normal}"
-#			fi
-#		fi
-#	done
-#
-#}
-
 function search() { #search apps using pi-apps's api 'app_search' function
 		while read -r line; do
 			[[ -z "$line" ]] && continue
@@ -149,14 +100,6 @@ while [ "$1" != "" ]; do
 		install)
 			shift
 			for arg in "$@"; do
-				cmdflags+="$arg "
-			done
-			$PI_APPS_DIR/manage install "$(echo $cmdflags)"
-			exit $?
-		;;
-		multi-install)
-			shift
-			for arg in "$@"; do
 				cmdflags+="$arg\n"
 			done
 			#remove last \'n'
@@ -164,16 +107,8 @@ while [ "$1" != "" ]; do
 			#install apps
 			$PI_APPS_DIR/manage multi-install "$(echo -e "$args")"
 			exit $?
-			;;
-		remove|uninstall)
-			shift
-			for arg in "$@"; do
-				cmdflags+="$arg "
-			done
-			$PI_APPS_DIR/manage uninstall "$(echo $cmdflags)"
-			exit $?
 		;;
-		multi-remove | multi-uninstall)
+		remove|uninstall)
 			shift
 			for arg in "$@"; do
 				cmdflags+="$arg\n"
@@ -182,39 +117,38 @@ while [ "$1" != "" ]; do
 			#uninstall apps
 			$PI_APPS_DIR/manage multi-uninstall "$(echo -e "$args")"
 			exit $?
-			;;
+		;;
 		reinstall)
 			shift
 			for arg in "$@"; do
 				cmdflags+="$arg "
 			done
 			cmdflags="${cmdflags::-1}"
-			$PI_APPS_DIR/manage uninstall "$cmdflags"
-			$PI_APPS_DIR/manage install "$cmdflags" || error "Failed to reinstall \"$cmdflags\"!"
+			$PI_APPS_DIR/manage multi-uninstall "$cmdflags"
+			$PI_APPS_DIR/manage multi-install "$cmdflags" || error "Failed to reinstall \"$cmdflags\"!"
 			exit $?
 		;;
 		list-installed)
 			#list all the installed apps
 			#list_apps installed
-			ls "$PI_APPS_DIR/apps" | GREP_COLORS='ms=1;34' grep --color=always -x "$(grep -rx 'installed' "${PI_APPS_DIR}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!' | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
+			list_apps installed
 			exit $?
 		;;
 		list-uninstalled)
 			#list all the uninstalled apps
 			#list_apps uninstalled
-			ls $PI_APPS_DIR | grep --color=always -x "$(grep -rx 'uninstalled' "${PI_APPS_DIR}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!' | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
-			ls $PI_APPS_DIR | grep --color=always -vx "$(ls "${PI_APPS_DIR}/data/status" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
+			list_apps uninstalled
 			exit $?
 		;;
 		list-corrupted)
 			#list all the corrupted apps
 			#list_apps corrupted
-			ls $PI_APPS_DIR/apps | grep --color=always -x "$(grep -rx 'corrupted' "${PI_APPS_DIR}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!' | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
+			list_apps corrupted
 			exit $?
 		;;
 		list-all)
 			#list all the apps
-			list-all
+			list_apps all
 			exit $?
 		;;
 		search)
@@ -224,30 +158,63 @@ while [ "$1" != "" ]; do
 			search "$args"
 			exit $?
 		;;
-		update-apps)
-			#update all pi-apps apps
-			$PI_APPS_DIR/manage update-all
-			exit $?
-			;;
 		update)
-			#update all pi-apps
+			#update pi-apps
 			$PI_APPS_DIR/updater cli
 			exit $?
 		;;
-		website)
+		info)
 			shift
-			[[ "$@" == "" ]] && error "'website' option passed, but no app provided!"
-			args="$*"
-			#print the website of a app
-			get-website "$args" 2>/dev/null
-			if [[ "$website_error" == "1" ]]; then
-				echo -e "${red}${bold}ERROR:${normal}${red} There is no app called ${light_red}'$@'${red}!${normal}"
-				exit 1
+			
+			if [ -z "$*" ]; then
+				error "No app provided."
 			else
-				echo -e "${cyan}${inverted}$@'s website:${normal}"
-				echo -e "${bold}$website${normal}"
-				exit 0
+				app_name="$*"
 			fi
+				
+			if ! [ -d "$PI_APPS_DIR/apps/$app_name" ]; then
+				error "App not found."
+			fi
+			
+			description="$(cat "${DIRECTORY}/apps/$app_name/description" || echo 'Description unavailable')$installedpackages"
+
+			abovetext="
+- Current status: $(echo "$(app_status "$app_name")" | sed 's/corrupted/corrupted (installation failed)/g' | sed 's/disabled/disabled (installation is prevented on your system)/g')"
+			
+			if [ -f "${DIRECTORY}/apps/$app_name/website" ];then
+				#show website if it exists
+				abovetext="$abovetext
+- Website: $(cat "${DIRECTORY}/apps/$app_name/website" | head -n1)"
+
+			fi
+
+			if [ -z "$clicklist" ];then
+				clicklist="$(usercount)"
+			fi
+
+			usercount="$(echo "$clicklist" | grep " $app_name"'$' | awk '{print $1}' | head -n1)"
+			if [ ! -z "$usercount" ] && [ "$usercount" -gt 20 ];then
+				abovetext="$abovetext
+- $(printf "%'d" "$usercount") users"
+
+				if [ "$usercount" -ge 1500 ] && [ "$usercount" -lt 10000 ];then
+				  #if a lot of users, add an exclamation point!
+				  abovetext="${abovetext}!"
+				elif [ "$usercount" -ge 10000 ];then
+				  #if a crazy number of users, add two exclamation points!
+				  abovetext="${abovetext}!!"
+				fi
+			fi
+			
+			status_green "\n\e[4m$app_name"
+			status "$abovetext\n"
+			echo "$description" 
+			echo
+		;;
+		import)
+			shift
+			$PI_APPS_DIR/etc/import-app $*
+			exit $?
 		;;
 		status)
 			shift
@@ -271,16 +238,23 @@ while [ "$1" != "" ]; do
 			$PI_APPS_DIR/gui
 			exit $?
 		;;
+		create-app)
+			$PI_APPS_DIR/createapp
+			exit $?
+		;;
+		settings)
+			$PI_APPS_DIR/settings
+			exit $?
+		;;
 		-v | --version | version | about | --about)
 			#display about
 			about
 			exit 0
 		;;
 		*)
-			error "Unknown option '${light_blue}$1${red}'! run ${normal}${white}${dark_grey_background}pi-apps help${normal}${white}${red} to see all options."
+			error "Unknown option '${light_blue}$1${light_red}'! run ${normal}${white}${dark_grey_background}pi-apps help${normal}${white}${light_red} to see all options."
 		;;
 	esac
     shift
 done
-$PI_APPS_DIR/gui
 exit $?
