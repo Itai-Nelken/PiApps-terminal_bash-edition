@@ -90,34 +90,61 @@ while [ "$1" != "" ]; do
 		;;
 		install)
 			shift
-			for arg in "$@"; do
-				cmdflags+="$arg\n"
-			done
-			#remove last \'n'
-			args=${cmdflags%\\n}
-			#install apps
-			"$DIRECTORY/manage" multi-install "$(echo -e "$args")"
-			exit $?
+			if [ -d "$DIRECTORY/apps/$*" ]; then #if only provides one app
+				for arg in "$@"; do
+					cmdflags+="$arg "
+				done
+				"$DIRECTORY/manage" install "$(echo $cmdflags)"
+				exit $?
+			else #multiple app
+				for arg in "$@"; do
+					cmdflags+="$arg\n"
+				done
+				#remove last \'n'
+				args=${cmdflags%\\n}
+				#install apps
+				"$DIRECTORY/manage" multi-install "$(echo -e "$args")"
+				exit $?
+			fi
 		;;
 		remove|uninstall)
 			shift
-			for arg in "$@"; do
-				cmdflags+="$arg\n"
-			done
-			args=${cmdflags%\\n}
-			#uninstall apps
-			"$DIRECTORY/manage" multi-uninstall "$(echo -e "$args")"
-			exit $?
+			if [ -d "$DIRECTORY/apps/$*" ]; then #if only provides one app
+				for arg in "$@"; do
+					cmdflags+="$arg "
+				done
+				"$DIRECTORY/manage" uninstall "$(echo $cmdflags)"
+				exit $?
+			else #multiple app
+				for arg in "$@"; do
+					cmdflags+="$arg\n"
+				done
+				#remove last \'n'
+				args=${cmdflags%\\n}
+				#uninstall apps
+				"$DIRECTORY/manage" multi-uninstall "$(echo -e "$args")"
+				exit $?
+			fi
 		;;
 		reinstall)
 			shift
-			for arg in "$@"; do
-				cmdflags+="$arg "
-			done
-			cmdflags="${cmdflags::-1}"
-			"$DIRECTORY/manage" multi-uninstall "$cmdflags"
-			"$DIRECTORY/manage" multi-install "$cmdflags" || error "Failed to reinstall \"$cmdflags\"!"
-			exit $?
+			if [ -d "$DIRECTORY/apps/$*" ]; then #if only provides one app
+				for arg in "$@"; do
+					cmdflags+="$arg "
+				done
+				"$DIRECTORY/manage" uninstall "$(echo $cmdflags)"
+				"$DIRECTORY/manage" install "$(echo $cmdflags)"
+				exit $?
+			else #multiple app
+				for arg in "$@"; do
+					cmdflags+="$arg\n"
+				done
+				#remove last \'n'
+				args=${cmdflags%\\n}
+				"$DIRECTORY/manage" multi-uninstall "$(echo -e "$args")"
+				"$DIRECTORY/manage" multi-install "$(echo -e "$args")"
+				exit $?
+			fi
 		;;
 		list-installed)
 			#list all the installed apps
