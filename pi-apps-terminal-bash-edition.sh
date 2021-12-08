@@ -57,36 +57,28 @@ function help() {
 	echo -e "\n${white}${inverted}${bold}${light_blue}USAGE:${normal}"
 	echo '-------'
 	#echo -e "${underline}${light_green}./pi-apps-terminal-bash-edition.sh [option]${normal}"
-	echo -e "${white}${underline}${light_green}pi-apps [option]${normal}"
+	echo -e "${white}${underline}${light_green}pi-apps [option] [args]${normal}"
 	echo -e "\n${white}${inverted}${bold}${light_blue}Available options:${normal}"
 	echo '-------------------'
-	echo -e "${white}${dark_grey_background}install [appname]${normal}${white} - install any app available in pi-apps.\n"
-	echo -e "${white}${dark_grey_background}remove [appname]${normal}${white} - uninstall any app available in pi-apps. you can also use ${dark_grey_background}uninstall${normal}.\n"
-	echo -e "${white}${dark_grey_background}multi-install [app1] [app2]${normal}${white} - install multiple apps at the same time.\n"
-	echo -e "${white}${dark_grey_background}multi-uninstall [app1] [app2]${normal}${white} - uninstall multiple apps at the same time. you can also use ${dark_grey_background}multi-remove${normal}${white}.\n"
-	echo -e "${white}${dark_grey_background}reinstall [appname]${normal}${white} - reinstall any app available in pi-apps.\n"
+	echo -e "${white}${dark_grey_background}install [appname]${normal}${white} - install any apps available in pi-apps.\n"
+	echo -e "${white}${dark_grey_background}uninstall/remove [appname]${normal}${white} - uninstall any apps available in pi-apps.\n"
+	echo -e "${white}${dark_grey_background}reinstall [appname]${normal}${white} - reinstall any apps available in pi-apps.\n"
 	echo -e "${white}${dark_grey_background}list-all${white}${normal}${white} - print all apps available in pi-apps.\n"
 	echo -e "${white}${dark_grey_background}list-installed${normal}${white} - print all installed apps.\n"
 	echo -e "${white}${dark_grey_background}list-uninstalled${normal}${white} - print all uninstalled apps.\n"
-	echo -e "${white}${dark_grey_background}list-corrupted${normal}${white} - print all apps with the corrupted statu (meaning they failed to install/uninstall).\n"
+	echo -e "${white}${dark_grey_background}list-corrupted${normal}${white} - print all apps failed to install/uninstall.\n"
 	echo -e "${white}${dark_grey_background}status [app]${normal}${white} - print the status of a app in pi-apps.\n"
-	echo -e "${white}${dark_grey_background}search '[appname]'${normal}${white} - search all apps available in pi-apps (case sensitive).\n"
-	echo -e "${white}${dark_grey_background}update${normal}${white} - update all pi-apps components.\n"
-	echo -e "${white}${dark_grey_background}update-apps${normal}${white} - update all pi-apps apps only.\n"
-	echo -e "${white}${dark_grey_background}website '[appname]'${normal}${white} - print the website of any app in pi-apps.\n"
+	echo -e "${white}${dark_grey_background}search [appname]${normal}${white} - search all apps available in pi-apps (case sensitive).\n"
+	echo -e "${white}${dark_grey_background}update [cli|cli-yes|gui|gui-yes]${normal}${white} - update pi-apps in GUI or CLI.\n"
+	echo -e "${white}${dark_grey_background}info [appname]${normal}${white} - print the information of any app in pi-apps.\n"
+	echo -e "${white}${dark_grey_background}import [args]${normal}${white} - import apps to pi-apps. \n"
+	echo -e "${white}${dark_grey_background}settings${normal}${white} - launch the pi-apps settings menu.\n"
+	echo -e "${white}${dark_grey_background}create-app${normal}${white} - launch the pi-apps create app guide.\n"
 	echo -e "${white}${dark_grey_background}gui${normal}${white} - launch the pi-apps normally.\n"
 	echo -e "${white}${dark_grey_background}help${normal}${white} - show this help.${normal}"
 	echo '===================='
 
-	echo -e "\n${cyan}${bold}if you don't supply any option pi-apps will start normally.${normal}"
-}
-
-function search() { #search apps using pi-apps's api 'app_search' function
-		while read -r line; do
-			[[ -z "$line" ]] && continue
-			echo -e "${bold}${inverted}${light_blue}$line${normal}"
-    	echo -e "${green}$(cat $DIRECTORY/apps/"$line"/description || echo "No description available")${normal}"
-		done < <(app_search $1)
+	echo -e "\n${cyan}${bold}If you don't supply any option, pi-apps will start normally.${normal}"
 }
 
 while [ "$1" != "" ]; do
@@ -149,12 +141,22 @@ while [ "$1" != "" ]; do
 		;;
 		search)
 			shift
-			app_search $* 2>/dev/null
+			echo
+			while read -r line; do
+				[[ -z "$line" ]] && continue
+				echo -e "${bold}${inverted}${light_blue}${underline}$line${normal}\n"
+				echo -e "${green}$(cat $DIRECTORY/apps/"$line"/description || echo "No description available")${normal}\n"
+			done < <(app_search $1 2>/dev/null)
 			exit $?
 		;;
 		update)
 			#update pi-apps
-			"$DIRECTORY/updater" cli
+			shift
+			if [ "$*" == "cli" ] || [ "$*" == "gui" ] || [ "$*" == "cli-yes" ] || [ "$*" == "gui-yes" ] || [ "$*" == "" ]; then
+				"$DIRECTORY/updater" $*
+			else
+				error "Argument '$*' not available. \n    Accepted arguments: [gui|cli|gui-yes|cli-yes]"
+			fi
 			exit $?
 		;;
 		info)
