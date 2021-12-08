@@ -94,7 +94,7 @@ while [ "$1" != "" ]; do
 				for arg in "$@"; do
 					cmdflags+="$arg "
 				done
-				"$DIRECTORY/manage" install "$(echo $cmdflags)"
+				"$DIRECTORY/manage" install "$cmdflags"
 				exit $?
 			else #multiple app
 				for arg in "$@"; do
@@ -113,7 +113,7 @@ while [ "$1" != "" ]; do
 				for arg in "$@"; do
 					cmdflags+="$arg "
 				done
-				"$DIRECTORY/manage" uninstall "$(echo $cmdflags)"
+				"$DIRECTORY/manage" uninstall "$cmdflags"
 				exit $?
 			else #multiple app
 				for arg in "$@"; do
@@ -132,8 +132,8 @@ while [ "$1" != "" ]; do
 				for arg in "$@"; do
 					cmdflags+="$arg "
 				done
-				"$DIRECTORY/manage" uninstall "$(echo $cmdflags)"
-				"$DIRECTORY/manage" install "$(echo $cmdflags)"
+				"$DIRECTORY/manage" uninstall "$cmdflags"
+				"$DIRECTORY/manage" install "$cmdflags"
 				exit $?
 			else #multiple app
 				for arg in "$@"; do
