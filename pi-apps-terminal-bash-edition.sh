@@ -129,19 +129,16 @@ while [ "$1" != "" ]; do
 		;;
 		list-installed)
 			#list all the installed apps
-			#list_apps installed
 			list_apps installed
 			exit $?
 		;;
 		list-uninstalled)
 			#list all the uninstalled apps
-			#list_apps uninstalled
 			list_apps uninstalled
 			exit $?
 		;;
 		list-corrupted)
 			#list all the corrupted apps
-			#list_apps corrupted
 			list_apps corrupted
 			exit $?
 		;;
