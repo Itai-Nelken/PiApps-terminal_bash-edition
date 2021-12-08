@@ -172,15 +172,15 @@ while [ "$1" != "" ]; do
 			while read -r line; do
 				[[ -z "$line" ]] && continue
 				echo -e "${bold}${inverted}${light_blue}${underline}$line${normal}\n"
-				echo -e "${green}$(cat $DIRECTORY/apps/"$line"/description || echo "No description available")${normal}\n"
-			done < <(app_search $1 2>/dev/null)
+				echo -e "${green}$(cat "$DIRECTORY/apps/$line/description" || echo "No description available")${normal}\n"
+			done < <(app_search "$1" 2>/dev/null)
 			exit $?
 		;;
 		update)
 			#update pi-apps
 			shift
 			if [ "$*" == "cli" ] || [ "$*" == "gui" ] || [ "$*" == "cli-yes" ] || [ "$*" == "gui-yes" ] || [ "$*" == "" ]; then
-				"$DIRECTORY/updater" $* 
+				"$DIRECTORY/updater" "$*" 
 			else
 				error "Argument '$*' not available. \n    Accepted arguments: [gui|cli|gui-yes|cli-yes]"
 			fi
@@ -199,7 +199,7 @@ while [ "$1" != "" ]; do
 				error "App not found."
 			fi
 			
-			description="$(cat "${DIRECTORY}/apps/$app_name/description" || echo 'Description unavailable')$installedpackages"
+			description="$(cat "${DIRECTORY}/apps/$app_name/description" || echo 'Description unavailable')"
 
 			abovetext="
 - Current status: $(app_status "$app_name") | sed 's/corrupted/corrupted (installation failed)/g' | sed 's/disabled/disabled (installation is prevented on your system)/g')"
@@ -216,7 +216,7 @@ while [ "$1" != "" ]; do
 			fi
 
 			usercount="$(echo "$clicklist" | grep " $app_name"'$' | awk '{print $1}' | head -n1)"
-			if [ ! -z "$usercount" ] && [ "$usercount" -gt 20 ];then
+			if [ -n "$usercount" ] && [ "$usercount" -gt 20 ];then
 				abovetext="$abovetext
 - $(printf "%'d" "$usercount") users"
 
@@ -232,10 +232,11 @@ while [ "$1" != "" ]; do
 			status_green "\n\e[4m$app_name"
 			status "$abovetext\n"
 			echo -e "$description\n" 
+			exit 0
 		;;
 		import)
 			shift
-			"$DIRECTORY/etc/import-app" $*
+			"$DIRECTORY/etc/import-app" "$*"
 			exit $?
 		;;
 		status)
@@ -257,7 +258,7 @@ while [ "$1" != "" ]; do
 		;;
 		gui)
 			#open pi-apps regularly
-			$DIRECTORY/gui
+			"$DIRECTORY/gui"
 			exit $?
 		;;
 		create-app)
@@ -279,4 +280,6 @@ while [ "$1" != "" ]; do
 	esac
     shift
 done
+
+"$DIRECTORY/gui" #launch pi-apps if no argument
 exit $?
