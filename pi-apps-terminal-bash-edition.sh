@@ -136,7 +136,7 @@ while [ "$1" != "" ]; do
 		;;
 		list-all)
 			#list all the apps
-			list_apps all
+			list_apps cpu_installable
 			exit $?
 		;;
 		search)
