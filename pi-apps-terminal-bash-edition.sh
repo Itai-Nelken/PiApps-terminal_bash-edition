@@ -175,7 +175,7 @@ while [ "$1" != "" ]; do
 			description="$(cat "${DIRECTORY}/apps/$app_name/description" || echo 'Description unavailable')$installedpackages"
 
 			abovetext="
-- Current status: "$(app_status "$app_name")" | sed 's/corrupted/corrupted (installation failed)/g' | sed 's/disabled/disabled (installation is prevented on your system)/g')"
+- Current status: $(app_status "$app_name") | sed 's/corrupted/corrupted (installation failed)/g' | sed 's/disabled/disabled (installation is prevented on your system)/g')"
 			
 			if [ -f "${DIRECTORY}/apps/$app_name/website" ];then
 				#show website if it exists
