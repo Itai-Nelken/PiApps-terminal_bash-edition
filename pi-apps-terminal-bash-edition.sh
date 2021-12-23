@@ -154,7 +154,9 @@ while [ "$1" != "" ]; do
 		;;
 		list-uninstalled)
 			#list all the uninstalled apps
-			list_apps uninstalled
+			#list_apps uninstalled
+			ls $PI_APPS_DIR | grep --color=always -x "$(grep -rx 'uninstalled' "${PI_APPS_DIR}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!' | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
+			ls $PI_APPS_DIR | grep --color=always -vx "$(ls "${PI_APPS_DIR}/data/status" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
 			exit $?
 		;;
 		list-corrupted)
