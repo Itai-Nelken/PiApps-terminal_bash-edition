@@ -90,7 +90,7 @@ while [ "$1" != "" ]; do
 		;;
 		install)
 			shift
-			if [ -d "$DIRECTORY/apps/$*" ]; then #if only provides one app
+			if [ -d "$DIRECTORY/apps/$*" ]; then # if only one app is provided
 				for arg in "$@"; do
 					cmdflags+="$arg "
 				done
