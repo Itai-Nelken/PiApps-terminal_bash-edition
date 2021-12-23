@@ -66,7 +66,7 @@ function help() {
 	echo -e "${white}${dark_grey_background}list-all${white}${normal}${white} - print all apps available in pi-apps.\n"
 	echo -e "${white}${dark_grey_background}list-installed${normal}${white} - print all installed apps.\n"
 	echo -e "${white}${dark_grey_background}list-uninstalled${normal}${white} - print all uninstalled apps.\n"
-	echo -e "${white}${dark_grey_background}list-corrupted${normal}${white} - print all apps failed to install/uninstall.\n"
+	echo -e "${white}${dark_grey_background}list-corrupted${normal}${white} - print all apps failed to install/uninstall (are corrupted).\n"
 	echo -e "${white}${dark_grey_background}status [app]${normal}${white} - print the status of a app in pi-apps.\n"
 	echo -e "${white}${dark_grey_background}search [appname]${normal}${white} - search all apps available in pi-apps (case sensitive).\n"
 	echo -e "${white}${dark_grey_background}update [cli|cli-yes|gui|gui-yes]${normal}${white} - update pi-apps in GUI or CLI.\n"
