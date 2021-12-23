@@ -194,11 +194,14 @@ while [ "$1" != "" ]; do
 		update)
 			#update pi-apps
 			shift
-			if [ "$*" == "cli" ] || [ "$*" == "gui" ] || [ "$*" == "cli-yes" ] || [ "$*" == "gui-yes" ] || [ "$*" == "" ]; then
-				"$DIRECTORY/updater" "$*" 
-			else
-				error "Argument '$*' not available. \n    Accepted arguments: [gui|cli|gui-yes|cli-yes]"
-			fi
+			case $1 in
+				--yes|-y)
+					"$DIRECTORY/updater" cli-yes
+				;;
+				*)
+					"$DIRECTORY/updater" cli
+				;;
+			esac
 			exit $?
 		;;
 		info)
@@ -251,7 +254,11 @@ while [ "$1" != "" ]; do
 		;;
 		import)
 			shift
-			"$DIRECTORY/etc/import-app" "$*"
+			if [ -n "$*" ]; then
+				"$DIRECTORY/etc/import-app" "$*"
+			else
+				error "You need to provide what to import."	
+			fi
 			exit $?
 		;;
 		status)
@@ -274,14 +281,6 @@ while [ "$1" != "" ]; do
 		gui)
 			#open pi-apps regularly
 			"$DIRECTORY/gui"
-			exit $?
-		;;
-		create-app)
-			"$DIRECTORY/createapp"
-			exit $?
-		;;
-		settings)
-			"$DIRECTORY/settings"
 			exit $?
 		;;
 		-v | --version | version | about | --about)
