@@ -184,7 +184,6 @@ while [ "$1" != "" ]; do
 		;;
 		search)
 			shift
-			echo
 			while read -r line; do
 				[[ -z "$line" ]] && continue
 				echo -e "${bold}${inverted}${light_blue}${underline}$line${normal}\n"
