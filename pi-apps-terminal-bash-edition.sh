@@ -96,7 +96,7 @@ while [ "$1" != "" ]; do
 				done
 				"$DIRECTORY/manage" install "$cmdflags"
 				exit $?
-			else #multiple app
+			else # multiple apps
 				for arg in "$@"; do
 					cmdflags+="$arg\n"
 				done
