@@ -135,7 +135,7 @@ while [ "$1" != "" ]; do
 				"$DIRECTORY/manage" uninstall "$cmdflags"
 				"$DIRECTORY/manage" install "$cmdflags"
 				exit $?
-			else #multiple app
+			else # multiple apps
 				for arg in "$@"; do
 					cmdflags+="$arg\n"
 				done
