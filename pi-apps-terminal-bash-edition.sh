@@ -109,7 +109,7 @@ while [ "$1" != "" ]; do
 		;;
 		remove|uninstall)
 			shift
-			if [ -d "$DIRECTORY/apps/$*" ]; then #if only provides one app
+			if [ -d "$DIRECTORY/apps/$*" ]; then # if only one app provided
 				for arg in "$@"; do
 					cmdflags+="$arg "
 				done
