@@ -296,5 +296,5 @@ while [ "$1" != "" ]; do
     shift
 done
 
-"$DIRECTORY/gui" #launch pi-apps if no argument
+"$DIRECTORY/gui" # launch pi-apps regularly if no (known) arguments provided
 exit $?
