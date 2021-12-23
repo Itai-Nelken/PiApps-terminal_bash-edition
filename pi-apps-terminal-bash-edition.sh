@@ -166,8 +166,20 @@ while [ "$1" != "" ]; do
 			exit $?
 		;;
 		list-all)
-			#list all the apps
-			list_apps cpu_installable
+			shift
+			case $1 in
+				-d|--description) #print with descriptions
+					#list all the apps
+					IFS=$'\n'
+					for app in $(list_apps cpu_installable); do
+					     echo -e "\n${bold}${inverted}${light_blue}$app${normal}"
+					     echo -e "${green}$(cat "$DIRECTORY/apps/$app/description")${normal}"
+					done	
+				;;
+				*)
+					list_apps cpu_installable
+				;;
+			esac
 			exit $?
 		;;
 		search)
