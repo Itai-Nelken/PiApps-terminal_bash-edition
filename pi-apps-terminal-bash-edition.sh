@@ -148,7 +148,8 @@ while [ "$1" != "" ]; do
 		;;
 		list-installed)
 			#list all the installed apps
-			list_apps installed
+			#list_apps installed
+			ls "$PI_APPS_DIR/apps" | GREP_COLORS='ms=1;34' grep --color=always -x "$(grep -rx 'installed' "${PI_APPS_DIR}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!' | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
 			exit $?
 		;;
 		list-uninstalled)
