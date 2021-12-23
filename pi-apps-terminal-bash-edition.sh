@@ -119,7 +119,7 @@ while [ "$1" != "" ]; do
 				for arg in "$@"; do
 					cmdflags+="$arg\n"
 				done
-				#remove last \'n'
+				# remove last newline ('\n')
 				args=${cmdflags%\\n}
 				#uninstall apps
 				"$DIRECTORY/manage" multi-uninstall "$(echo -e "$args")"
