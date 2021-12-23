@@ -161,7 +161,8 @@ while [ "$1" != "" ]; do
 		;;
 		list-corrupted)
 			#list all the corrupted apps
-			list_apps corrupted
+			#list_apps corrupted
+			ls $PI_APPS_DIR/apps | grep --color=always -x "$(grep -rx 'corrupted' "${PI_APPS_DIR}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!' | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
 			exit $?
 		;;
 		list-all)
