@@ -100,7 +100,7 @@ while [ "$1" != "" ]; do
 				for arg in "$@"; do
 					cmdflags+="$arg\n"
 				done
-				#remove last \'n'
+				# remove last newline ('\n')
 				args=${cmdflags%\\n}
 				#install apps
 				"$DIRECTORY/manage" multi-install "$(echo -e "$args")"
