@@ -63,17 +63,14 @@ function help() {
 	echo -e "${white}${dark_grey_background}install [appname]${normal}${white} - install any apps available in pi-apps.\n"
 	echo -e "${white}${dark_grey_background}uninstall/remove [appname]${normal}${white} - uninstall any apps available in pi-apps.\n"
 	echo -e "${white}${dark_grey_background}reinstall [appname]${normal}${white} - reinstall any apps available in pi-apps.\n"
-	echo -e "${white}${dark_grey_background}list-all${white}${normal}${white} - print all apps available in pi-apps.\n"
-	echo -e "${white}${dark_grey_background}list-installed${normal}${white} - print all installed apps.\n"
-	echo -e "${white}${dark_grey_background}list-uninstalled${normal}${white} - print all uninstalled apps.\n"
-	echo -e "${white}${dark_grey_background}list-corrupted${normal}${white} - print all apps failed to install/uninstall (are corrupted).\n"
+	echo -e "${white}${dark_grey_background}list-all [-d|--description]${white}${normal}${white} - print all apps available in pi-apps.\n"
+	echo -e "${white}${dark_grey_background}list-installed [-d|--description]${normal}${white} - print all installed apps.\n"
+	echo -e "${white}${dark_grey_background}list-uninstalled [-d|--description]${normal}${white} - print all uninstalled apps.\n"
+	echo -e "${white}${dark_grey_background}list-corrupted [-d|--description]${normal}${white} - print all apps failed to install/uninstall (are corrupted).\n"
 	echo -e "${white}${dark_grey_background}status [app]${normal}${white} - print the status of a app in pi-apps.\n"
 	echo -e "${white}${dark_grey_background}search [appname]${normal}${white} - search all apps available in pi-apps (case sensitive).\n"
-	echo -e "${white}${dark_grey_background}update [cli|cli-yes|gui|gui-yes]${normal}${white} - update pi-apps in GUI or CLI.\n"
+	echo -e "${white}${dark_grey_background}update [--yes|-y]${normal}${white} - update pi-apps in GUI or CLI.\n"
 	echo -e "${white}${dark_grey_background}info [appname]${normal}${white} - print the information of any app in pi-apps.\n"
-	echo -e "${white}${dark_grey_background}import [args]${normal}${white} - import apps to pi-apps. \n"
-	echo -e "${white}${dark_grey_background}settings${normal}${white} - launch the pi-apps settings menu.\n"
-	echo -e "${white}${dark_grey_background}create-app${normal}${white} - launch the pi-apps create app guide.\n"
 	echo -e "${white}${dark_grey_background}gui${normal}${white} - launch the pi-apps normally.\n"
 	echo -e "${white}${dark_grey_background}help${normal}${white} - show this help.${normal}"
 	echo '===================='
@@ -147,22 +144,69 @@ while [ "$1" != "" ]; do
 			fi
 		;;
 		list-installed)
+			shift
 			#list all the installed apps
 			#list_apps installed
-			ls "$PI_APPS_DIR/apps" | GREP_COLORS='ms=1;34' grep --color=always -x "$(grep -rx 'installed' "${PI_APPS_DIR}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!' | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
+			case $1 in
+				-d|--description) #print with descriptions
+					IFS=$'\n'
+					for app in $(list_apps cpu_installable | grep -x "$(echo "$(grep -rx 'installed' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"); do
+						echo -e "\n${bold}${inverted}${light_blue}$app${normal}"
+						echo -e "${green}$(cat "$DIRECTORY/apps/$app/description")${normal}"
+					done
+				;;
+				*)
+					IFS=$'\n'
+					for app in $(list_apps cpu_installable | grep -x "$(echo "$(grep -rx 'installed' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"); do
+						echo -e "\n${bold}${inverted}${light_blue}$app${normal}"
+					done
+				;;
+			esac
+			echo
 			exit $?
 		;;
 		list-uninstalled)
+			shift
 			#list all the uninstalled apps
 			#list_apps uninstalled
-			ls $PI_APPS_DIR | grep --color=always -x "$(grep -rx 'uninstalled' "${PI_APPS_DIR}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!' | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
-			ls $PI_APPS_DIR | grep --color=always -vx "$(ls "${PI_APPS_DIR}/data/status" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
+			case $1 in
+				-d|--description) #print with descriptions
+					IFS=$'\n'
+					for app in $(echo "$(list_apps cpu_installable | grep  --color=none -x "$(echo "$(grep -rx 'uninstalled' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"; list_apps cpu_installable | grep --color=always -vx "$(echo "$(ls "${DIRECTORY}/data/status")" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')")" | sort); do
+						echo -e "\n${bold}${inverted}${light_blue}$app${normal}"
+						echo -e "${green}$(cat "$DIRECTORY/apps/$app/description")${normal}"
+					done
+				;;
+				*)
+					IFS=$'\n'
+					for app in $(echo "$(list_apps cpu_installable | grep  --color=none -x "$(echo "$(grep -rx 'uninstalled' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"; list_apps cpu_installable | grep --color=always -vx "$(echo "$(ls "${DIRECTORY}/data/status")" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')")" | sort); do
+						echo -e "\n${bold}${inverted}${light_blue}$app${normal}"
+					done
+				;;
+			esac
+			echo  
 			exit $?
 		;;
 		list-corrupted)
+			shift
 			#list all the corrupted apps
 			#list_apps corrupted
-			ls $PI_APPS_DIR/apps | grep --color=always -x "$(grep -rx 'corrupted' "${PI_APPS_DIR}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!' | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
+			case $1 in
+				-d|--description) #print with descriptions
+					IFS=$'\n'
+					for app in $(list_apps cpu_installable | grep -x "$(echo "$(grep -rx 'corrupted' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"); do
+						echo -e "\n${bold}${inverted}${light_blue}$app${normal}"
+						echo -e "${green}$(cat "$DIRECTORY/apps/$app/description")${normal}"
+					done
+				;;
+				*)
+					IFS=$'\n'
+					for app in $(list_apps cpu_installable | grep -x "$(echo "$(grep -rx 'corrupted' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"); do
+						echo -e "\n${bold}${inverted}${light_blue}$app${normal}"
+					done
+				;;
+			esac
+			echo
 			exit $?
 		;;
 		list-all)
@@ -255,14 +299,14 @@ while [ "$1" != "" ]; do
 			echo -e "$description\n" 
 			exit 0
 		;;
-		import)
+		website)
 			shift
-			if [ -n "$*" ]; then
-				"$DIRECTORY/etc/import-app" "$*"
-			else
-				error "You need to provide what to import."	
+			if [ -z "$@" ]; then
+				error "No app provided."
 			fi
-			exit $?
+			website="$(cat "$DIRECTORY/apps/$@/website" 2>/dev/null)" || error "'$@' not found."
+			echo -e "${bold}${inverted}$@${normal} - ${green}$website${normal}" 2>/dev/null 
+			exit 0
 		;;
 		status)
 			shift
