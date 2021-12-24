@@ -177,7 +177,10 @@ while [ "$1" != "" ]; do
 					done	
 				;;
 				*)
-					list_apps cpu_installable
+					IFS=$'\n'
+					for app in $(list_apps cpu_installable); do
+					     echo -e "\n${bold}${inverted}${light_blue}$app${normal}"
+					done	
 				;;
 			esac
 			exit $?
