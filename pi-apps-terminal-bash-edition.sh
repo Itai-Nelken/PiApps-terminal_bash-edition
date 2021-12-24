@@ -150,14 +150,14 @@ while [ "$1" != "" ]; do
 			case $1 in
 				-d|--description) #print with descriptions
 					IFS=$'\n'
-					for app in $(list_apps cpu_installable | grep -x "$(echo "$(grep -rx 'installed' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"); do
+					for app in $(list_apps cpu_installable | grep -x "$(grep -rx 'installed' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g'); do
 						echo -e "\n${bold}${inverted}${light_blue}$app${normal}"
 						echo -e "${green}$(cat "$DIRECTORY/apps/$app/description")${normal}"
 					done
 				;;
 				*)
 					IFS=$'\n'
-					for app in $(list_apps cpu_installable | grep -x "$(echo "$(grep -rx 'installed' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"); do
+					for app in $(list_apps cpu_installable | grep -x "$(grep -rx 'installed' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g'); do
 						echo -e "\n${bold}${inverted}${light_blue}$app${normal}"
 					done
 				;;
@@ -172,14 +172,14 @@ while [ "$1" != "" ]; do
 			case $1 in
 				-d|--description) #print with descriptions
 					IFS=$'\n'
-					for app in $(echo "$(list_apps cpu_installable | grep  --color=none -x "$(echo "$(grep -rx 'uninstalled' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"; list_apps cpu_installable | grep --color=always -vx "$(echo "$(ls "${DIRECTORY}/data/status")" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')")" | sort); do
+					for app in $(echo "$(list_apps cpu_installable | grep  --color=none -x "$(grep -rx 'uninstalled' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"; list_apps cpu_installable | grep --color=always -vx "$(echo "$(ls "${DIRECTORY}/data/status")" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')" | sort); do
 						echo -e "\n${bold}${inverted}${light_blue}$app${normal}"
 						echo -e "${green}$(cat "$DIRECTORY/apps/$app/description")${normal}"
 					done
 				;;
 				*)
 					IFS=$'\n'
-					for app in $(echo "$(list_apps cpu_installable | grep  --color=none -x "$(echo "$(grep -rx 'uninstalled' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"; list_apps cpu_installable | grep --color=always -vx "$(echo "$(ls "${DIRECTORY}/data/status")" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')")" | sort); do
+					for app in $(echo "$(list_apps cpu_installable | grep  --color=none -x "$(grep -rx 'uninstalled' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"; list_apps cpu_installable | grep --color=always -vx "$(echo "$(ls "${DIRECTORY}/data/status")" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')" | sort); do
 						echo -e "\n${bold}${inverted}${light_blue}$app${normal}"
 					done
 				;;
@@ -194,14 +194,14 @@ while [ "$1" != "" ]; do
 			case $1 in
 				-d|--description) #print with descriptions
 					IFS=$'\n'
-					for app in $(list_apps cpu_installable | grep -x "$(echo "$(grep -rx 'corrupted' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"); do
+					for app in $(list_apps cpu_installable | grep -x "$(grep -rx 'corrupted' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g'); do
 						echo -e "\n${bold}${inverted}${light_blue}$app${normal}"
 						echo -e "${green}$(cat "$DIRECTORY/apps/$app/description")${normal}"
 					done
 				;;
 				*)
 					IFS=$'\n'
-					for app in $(list_apps cpu_installable | grep -x "$(echo "$(grep -rx 'corrupted' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"); do
+					for app in $(list_apps cpu_installable | grep -x "$(grep -rx 'corrupted' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g'); do
 						echo -e "\n${bold}${inverted}${light_blue}$app${normal}"
 					done
 				;;
@@ -301,7 +301,7 @@ while [ "$1" != "" ]; do
 		;;
 		website)
 			shift
-			if [ -z "$@" ]; then
+			if [ -z "$*" ]; then
 				error "No app provided."
 			fi
 			website="$(cat "$DIRECTORY/apps/$@/website" 2>/dev/null)" || error "'$@' not found."
