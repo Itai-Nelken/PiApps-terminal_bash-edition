@@ -172,14 +172,14 @@ while [ "$1" != "" ]; do
 			case $1 in
 				-d|--description) #print with descriptions
 					IFS=$'\n'
-					for app in $(echo "$(list_apps cpu_installable | grep  --color=none -x "$(grep -rx 'uninstalled' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"; list_apps cpu_installable | grep --color=always -vx "$(echo "$(ls "${DIRECTORY}/data/status")" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')" | sort); do
+					for app in $(echo "$(list_apps cpu_installable | grep  --color=none -x "$(grep -rx 'uninstalled' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"; list_apps cpu_installable | grep --color=always -vx "$(ls "${DIRECTORY}/data/status" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')" | sort); do
 						echo -e "\n${bold}${inverted}${light_blue}$app${normal}"
 						echo -e "${green}$(cat "$DIRECTORY/apps/$app/description")${normal}"
 					done
 				;;
 				*)
 					IFS=$'\n'
-					for app in $(echo "$(list_apps cpu_installable | grep  --color=none -x "$(grep -rx 'uninstalled' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"; list_apps cpu_installable | grep --color=always -vx "$(echo "$(ls "${DIRECTORY}/data/status")" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')" | sort); do
+					for app in $(echo "$(list_apps cpu_installable | grep  --color=none -x "$(grep -rx 'uninstalled' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"; list_apps cpu_installable | grep --color=always -vx "$(ls "${DIRECTORY}/data/status" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')" | sort); do
 						echo -e "\n${bold}${inverted}${light_blue}$app${normal}"
 					done
 				;;
@@ -283,7 +283,7 @@ while [ "$1" != "" ]; do
 			usercount="$(echo "$clicklist" | grep " $app_name"'$' | awk '{print $1}' | head -n1)"
 			if [ -n "$usercount" ] && [ "$usercount" -gt 20 ];then
 				abovetext="$abovetext
-- $(printf "%'d" "$usercount") users"
+- $(printf %d "$usercount") users"
 
 				if [ "$usercount" -ge 1500 ] && [ "$usercount" -lt 10000 ];then
 				  #if a lot of users, add an exclamation point!
