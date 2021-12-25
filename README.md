@@ -51,10 +51,6 @@ That will install pi-apps if it isn't already installed, as well as removing the
 
 `info [appname]` - print the information of any app in pi-apps.
 
-`settings` - launch the pi-apps settings menu.
-
-`create-app` - launch the pi-apps create app guide.
-
 `gui` - launch the pi-apps normally.
 
 `help` - show this help.
