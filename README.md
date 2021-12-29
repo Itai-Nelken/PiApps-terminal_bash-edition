@@ -33,7 +33,7 @@ That will install pi-apps if it isn't already installed, as well as removing the
 
 `uninstall/remove [appname]` - uninstall any app(s) available in pi-apps.
 
-`reinstall [appname]` - reinstall any apps available in pi-apps.
+`reinstall [appname]` - reinstall any app(s) available in pi-apps.
 
 `list-all` - print all apps available in pi-apps.
 
