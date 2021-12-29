@@ -8,7 +8,7 @@ if [ -z "$DIRECTORY" ]; then
 	DIRECTORY="$HOME/pi-apps"
 fi
 
-#check if '~/pi-apps/api' exists
+#check if "$DIRECTORY/api" exists
 if [[ ! -f "$DIRECTORY/api" ]]; then
 	echo -e "\e[1;31m[!] \e[0;31mThe pi-apps \"api\" script doesn't exist!\e[0m"
 	exit 1
@@ -68,7 +68,8 @@ function help() {
 	echo -e "${white}${dark_grey_background}list-uninstalled [-d|--description]${normal}${white} - print all uninstalled apps.\n"
 	echo -e "${white}${dark_grey_background}list-corrupted [-d|--description]${normal}${white} - print all apps failed to install/uninstall (are corrupted).\n"
 	echo -e "${white}${dark_grey_background}status [app]${normal}${white} - print the status of a app in pi-apps.\n"
-	echo -e "${white}${dark_grey_background}search [appname]${normal}${white} - search all apps available in pi-apps (case sensitive).\n"
+	echo -e "${white}${dark_grey_background}search [args]${normal}${white} - search all apps available in pi-apps (case sensitive).\n"
+	echo -e "${white}${dark_grey_background}website [app]${normal}${white} - print the website of an app in pi-apps.\n"
 	echo -e "${white}${dark_grey_background}update [--yes|-y]${normal}${white} - update pi-apps in GUI or CLI.\n"
 	echo -e "${white}${dark_grey_background}info [appname]${normal}${white} - print the information of any app in pi-apps.\n"
 	echo -e "${white}${dark_grey_background}gui${normal}${white} - launch the pi-apps normally.\n"
