@@ -9,7 +9,7 @@ if [ -z "$DIRECTORY" ]; then
 fi
 
 #check if '~/pi-apps/api' exists
-if [ ! -f "$DIRECTORY/api" ]; then
+if [[ ! -f "$DIRECTORY/api" ]]; then
 	echo -e "\e[1;31m[!] \e[0;31mThe pi-apps \"api\" script doesn't exist!\e[0m"
 	exit 1
 fi
