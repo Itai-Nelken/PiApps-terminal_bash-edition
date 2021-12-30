@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ### ignore some shellcheck warnings
-# shellcheck disable=SC2145,SC2199,SC2068
+# shellcheck disable=SC2145,SC2199,SC2068,SC2013,SC1090,SC2034
 
 #directory variables
 if [ -z "$DIRECTORY" ]; then
@@ -173,14 +173,14 @@ while [ "$1" != "" ]; do
 			case $1 in
 				-d|--description) #print with descriptions
 					IFS=$'\n'
-					for app in $(echo "$(list_apps cpu_installable | grep  --color=none -x "$(grep -rx 'uninstalled' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"; list_apps cpu_installable | grep --color=always -vx "$(ls "${DIRECTORY}/data/status" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')" | sort); do
+					for app in $(sort <(grep -rx 'uninstalled' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!'; list_apps cpu_installable | grep -vx "$(find "${DIRECTORY}/data/status" -type f -printf "%f\n" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')")); do
 						echo -e "\n${bold}${inverted}${light_blue}$app${normal}"
 						echo -e "${green}$(cat "$DIRECTORY/apps/$app/description")${normal}"
 					done
 				;;
 				*)
 					IFS=$'\n'
-					for app in $(echo "$(list_apps cpu_installable | grep  --color=none -x "$(grep -rx 'uninstalled' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"; list_apps cpu_installable | grep --color=always -vx "$(ls "${DIRECTORY}/data/status" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')" | sort); do
+					for app in $(sort <(grep -rx 'uninstalled' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!'; list_apps cpu_installable | grep -vx "$(find "${DIRECTORY}/data/status" -type f -printf "%f\n" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')")); do
 						echo -e "\n${bold}${inverted}${light_blue}$app${normal}"
 					done
 				;;
