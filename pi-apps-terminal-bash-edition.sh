@@ -89,10 +89,7 @@ while [ "$1" != "" ]; do
 		install)
 			shift
 			if [ -d "$DIRECTORY/apps/$*" ]; then # if only one app is provided
-				for arg in "$@"; do
-					cmdflags+="$arg "
-				done
-				"$DIRECTORY/manage" install "$cmdflags"
+				"$DIRECTORY/manage" install "$@"
 				exit $?
 			else # multiple apps
 				for arg in "$@"; do
@@ -108,10 +105,7 @@ while [ "$1" != "" ]; do
 		remove|uninstall)
 			shift
 			if [ -d "$DIRECTORY/apps/$*" ]; then # if only one app provided
-				for arg in "$@"; do
-					cmdflags+="$arg "
-				done
-				"$DIRECTORY/manage" uninstall "$cmdflags"
+				"$DIRECTORY/manage" uninstall "$@"
 				exit $?
 			else #multiple app
 				for arg in "$@"; do
@@ -127,11 +121,8 @@ while [ "$1" != "" ]; do
 		reinstall)
 			shift
 			if [ -d "$DIRECTORY/apps/$*" ]; then # if only one app provided
-				for arg in "$@"; do
-					cmdflags+="$arg "
-				done
-				"$DIRECTORY/manage" uninstall "$cmdflags"
-				"$DIRECTORY/manage" install "$cmdflags"
+				"$DIRECTORY/manage" uninstall "$@"
+				"$DIRECTORY/manage" install "$@"
 				exit $?
 			else # multiple apps
 				for arg in "$@"; do
@@ -232,11 +223,13 @@ while [ "$1" != "" ]; do
 		;;
 		search)
 			shift
+			arg="$*"
+			IFS=$'\n'
 			while read -r line; do
 				[[ -z "$line" ]] && continue
-				echo -e "${bold}${inverted}${light_blue}${underline}$line${normal}\n"
-				echo -e "${green}$(cat "$DIRECTORY/apps/$line/description" || echo "No description available")${normal}\n"
-			done < <(app_search "$1" 2>/dev/null)
+				echo -e "${underline}$line${normal}\n" | ack --passthru "$arg"
+				echo -e "$(cat "$DIRECTORY/apps/$line/description" || echo "No description available")${normal}\n" | ack --passthru "$arg"
+			done < <(for app in $(grep -lrw "$DIRECTORY/apps" -e "$@" --exclude=*install* | awk '!seen[$0]++'); do basename $(dirname $app); done | awk '!seen[$0]++')
 			exit $?
 		;;
 		update)
