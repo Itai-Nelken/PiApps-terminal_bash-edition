@@ -29,31 +29,35 @@ That will install pi-apps if it isn't already installed, as well as removing the
 `pi-apps [option] [args]`
 
 ### Available options:
+
 `install [appname]` - install any apps available in pi-apps.
 
-`uninstall/remove [appname]` - uninstall any app(s) available in pi-apps.
+`uninstall/remove [appname]` - uninstall any apps available in pi-apps.
 
-`reinstall [appname]` - reinstall any app(s) available in pi-apps.
+`reinstall [appname]` - reinstall any apps available in pi-apps.
 
-`list-all` - print all apps available in pi-apps.
+`list-all [-d|--description]` - print all apps available in pi-apps.
 
-`list-installed` - print all installed apps.
+`list-installed [-d|--description]` - print all installed apps.
 
-`list-uninstalled` - print all uninstalled apps.
+`list-uninstalled [-d|--description]` - print all uninstalled apps.
 
-`list-corrupted` - print all apps failed to install/uninstall.
+`list-corrupted [-d|--description]` - print all apps failed to install/uninstall (are corrupted).
 
 `status [app]` - print the status of a app in pi-apps.
 
-`search [appname]` - search all apps available in pi-apps (case sensitive).
+`search [args]` - search all apps available in pi-apps (case sensitive).
 
-`update [cli|cli-yes|gui|gui-yes]` - update pi-apps in GUI or CLI.
+`website [app]` - print the website of an app in pi-apps.
 
-`info [appname]` - print the information of any app in pi-apps.
+`update [--yes|-y]` - update pi-apps in GUI or CLI.
+
+`info/details [appname]` - print the information of any app in pi-apps.
 
 `gui` - launch the pi-apps normally.
 
-`help` - show this help.
+`help` - show help message
+
 
 **If you don't supply any option, pi-apps will start normally.**
 
@@ -62,7 +66,7 @@ That will install pi-apps if it isn't already installed, as well as removing the
 #### Note that some things marked as done are only on the beta.
 - [x] install and uninstall (remove)
 - [x] multi-install and multi-uninstall (multi-remove)
-- [ ] merge install/uninstall and multi-install/multi-uninstall (respectively): detect if single app or a list of apps provided.
+- [x] merge install/uninstall and multi-install/multi-uninstall (respectively): detect if single app or a list of apps provided.
 - [x] list-all
 - [x] list-installed
 - [x] list-uninstalled (thanks to the new pi-apps `api` script).
