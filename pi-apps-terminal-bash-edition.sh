@@ -150,7 +150,7 @@ function help() {
 	echo -e "${white}${dark_grey_background}search [args]${normal}${white} - search all apps available in pi-apps (case sensitive).\n"
 	echo -e "${white}${dark_grey_background}website [app]${normal}${white} - print the website of an app in pi-apps.\n"
 	echo -e "${white}${dark_grey_background}update [--yes|-y]${normal}${white} - update pi-apps in GUI or CLI.\n"
-	echo -e "${white}${dark_grey_background}info [appname]${normal}${white} - print the information of any app in pi-apps.\n"
+	echo -e "${white}${dark_grey_background}info/details [appname]${normal}${white} - print the information of any app in pi-apps.\n"
 	echo -e "${white}${dark_grey_background}gui${normal}${white} - launch the pi-apps normally.\n"
 	echo -e "${white}${dark_grey_background}help${normal}${white} - show this help.${normal}"
 	echo '===================='
