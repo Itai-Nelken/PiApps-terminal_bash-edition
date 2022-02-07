@@ -26,15 +26,15 @@ That will install pi-apps if it isn't already installed, as well as removing the
 
 ## Usage
 
-`pi-apps [option] [args]`
+`pi-apps [option] [arguments]`
 
 ### Available options:
 
-`install [appname]` - install any apps available in pi-apps.
+`install [app]` - install any app available in pi-apps.
 
-`uninstall/remove [appname]` - uninstall any apps available in pi-apps.
+`uninstall/remove [app]` - uninstall any app available in pi-apps.
 
-`reinstall [appname]` - reinstall any apps available in pi-apps.
+`reinstall [app]` - reinstall any app available in pi-apps.
 
 `list-all [-d|--description]` - print all apps available in pi-apps.
 
@@ -48,7 +48,7 @@ That will install pi-apps if it isn't already installed, as well as removing the
 
 `search [query]` - search all apps available in pi-apps (case sensitive).
 
-`website [app]` - print the website of an app in pi-apps.
+`website [app]` - print the link to the website of any app in pi-apps.
 
 `update [--yes|-y]` - update all apps and pi-apps itself.
 
@@ -56,7 +56,7 @@ That will install pi-apps if it isn't already installed, as well as removing the
 
 `gui` - launch pi-apps normally.
 
-`help` - show help message
+`help` - show help message.
 
 
 **If you don't supply any option, pi-apps will start normally.**

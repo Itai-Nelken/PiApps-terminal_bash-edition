@@ -11,11 +11,16 @@ fi
 #check if "$DIRECTORY/api" exists
 if [[ ! -f "$DIRECTORY/api" ]]; then
 	echo -e "\e[1;31m[!] \e[0;31mThe pi-apps \"api\" script doesn't exist!\e[0m"
+	echo -e "Please report this here: https://github.com/Itai-Nelken/PiApps-terminal_bash-edition/issues/new"	
 	exit 1
 fi
 
 #run the pi-apps api script to get its functions
 source "$DIRECTORY/api" &>/dev/null
+if [[ "$?" != 0 ]]; then
+	echo -e "${red}${bold}[!]${normal} ${light_red}Failed to source pi-apps api.${normal}" 1>&2
+	exit 1
+fi
 #unset the error function from the api script, we wan't to use our own defined later
 unset error
 
@@ -136,22 +141,22 @@ function help() {
 	echo -e "\n${white}${inverted}${bold}${light_blue}USAGE:${normal}"
 	echo '-------'
 	#echo -e "${underline}${light_green}./pi-apps-terminal-bash-edition.sh [option]${normal}"
-	echo -e "${white}${underline}${light_green}pi-apps [option] [args]${normal}"
+	echo -e "${white}${underline}${light_green}pi-apps [option] [arguments]${normal}"
 	echo -e "\n${white}${inverted}${bold}${light_blue}Available options:${normal}"
 	echo '-------------------'
-	echo -e "${white}${dark_grey_background}install [appname]${normal}${white} - install any apps available in pi-apps.\n"
-	echo -e "${white}${dark_grey_background}uninstall/remove [appname]${normal}${white} - uninstall any apps available in pi-apps.\n"
-	echo -e "${white}${dark_grey_background}reinstall [appname]${normal}${white} - reinstall any apps available in pi-apps.\n"
+	echo -e "${white}${dark_grey_background}install [app]${normal}${white} - install any app available in pi-apps.\n"
+	echo -e "${white}${dark_grey_background}uninstall/remove [app]${normal}${white} - uninstall any app available in pi-apps.\n"
+	echo -e "${white}${dark_grey_background}reinstall [app]${normal}${white} - reinstall any app available in pi-apps.\n"
 	echo -e "${white}${dark_grey_background}list-all [-d|--description]${white}${normal}${white} - print all apps available in pi-apps.\n"
 	echo -e "${white}${dark_grey_background}list-installed [-d|--description]${normal}${white} - print all installed apps.\n"
 	echo -e "${white}${dark_grey_background}list-uninstalled [-d|--description]${normal}${white} - print all uninstalled apps.\n"
 	echo -e "${white}${dark_grey_background}list-corrupted [-d|--description]${normal}${white} - print all apps failed to install/uninstall (are corrupted).\n"
 	echo -e "${white}${dark_grey_background}status [app]${normal}${white} - print the status of a app in pi-apps.\n"
-	echo -e "${white}${dark_grey_background}search [args]${normal}${white} - search all apps available in pi-apps (case sensitive).\n"
-	echo -e "${white}${dark_grey_background}website [app]${normal}${white} - print the website of an app in pi-apps.\n"
-	echo -e "${white}${dark_grey_background}update [--yes|-y]${normal}${white} - update pi-apps in GUI or CLI.\n"
-	echo -e "${white}${dark_grey_background}info/details [appname]${normal}${white} - print the information of any app in pi-apps.\n"
-	echo -e "${white}${dark_grey_background}gui${normal}${white} - launch the pi-apps normally.\n"
+	echo -e "${white}${dark_grey_background}search [query]${normal}${white} - search all apps available in pi-apps (case sensitive).\n"
+	echo -e "${white}${dark_grey_background}website [app]${normal}${white} - print the link to the website of any app in pi-apps.\n"
+	echo -e "${white}${dark_grey_background}update [--yes|-y]${normal}${white} - update all apps and pi-apps itself.\n"
+	echo -e "${white}${dark_grey_background}info/details [app]${normal}${white} - print the information of any app in pi-apps.\n"
+	echo -e "${white}${dark_grey_background}gui${normal}${white} - launch pi-apps normally.\n"
 	echo -e "${white}${dark_grey_background}help${normal}${white} - show this help.${normal}"
 	echo '===================='
 
@@ -399,7 +404,7 @@ while [[ "$1" != "" ]]; do
 			exit 0;
 		;;
 		gui)
-			#open pi-apps regularly
+			# run pi-apps regularly
 			"$DIRECTORY/gui"
 			exit $?
 		;;
