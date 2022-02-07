@@ -46,7 +46,7 @@ That will install pi-apps if it isn't already installed, as well as removing the
 
 `status [app]` - print the status of a app in pi-apps.
 
-`search [query]` - search all apps available in pi-apps (case sensitive).
+`search [query]` - search all apps available in pi-apps.
 
 `website [app]` - print the link to the website of any app in pi-apps.
 

@@ -152,7 +152,7 @@ function help() {
 	echo -e "${white}${dark_grey_background}list-uninstalled [-d|--description]${normal}${white} - print all uninstalled apps.\n"
 	echo -e "${white}${dark_grey_background}list-corrupted [-d|--description]${normal}${white} - print all apps failed to install/uninstall (are corrupted).\n"
 	echo -e "${white}${dark_grey_background}status [app]${normal}${white} - print the status of a app in pi-apps.\n"
-	echo -e "${white}${dark_grey_background}search [query]${normal}${white} - search all apps available in pi-apps (case sensitive).\n"
+	echo -e "${white}${dark_grey_background}search [query]${normal}${white} - search all apps available in pi-apps.\n"
 	echo -e "${white}${dark_grey_background}website [app]${normal}${white} - print the link to the website of any app in pi-apps.\n"
 	echo -e "${white}${dark_grey_background}update [--yes|-y]${normal}${white} - update all apps and pi-apps itself.\n"
 	echo -e "${white}${dark_grey_background}info/details [app]${normal}${white} - print the information of any app in pi-apps.\n"
