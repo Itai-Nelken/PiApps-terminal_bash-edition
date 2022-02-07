@@ -67,54 +67,54 @@ function list_apps() { # $1 can be: installed, uninstalled, corrupted, cpu_insta
     #combined list of apps, both online and local. Removes duplicate apps from the list.
     echo -e "$(list_apps local)\n$(list_apps online)" | sort | uniq
     
-  elif [[ "$1" == installed ]];then
+  elif [[ "$1" == "installed" ]];then
     #list apps      |   only show      (          list of installed apps                | remove match string  |   basename   )
     list_apps local | list_intersect "$(grep -rx 'installed' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')"
     
-  elif [[ "$1" == corrupted ]];then
+  elif [[ "$1" == "corrupted" ]];then
     #list apps      |only show         (          list of corrupted apps                | remove match string  |   basename   )
     list_apps local | list_intersect "$(grep -rx 'corrupted' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')"
     
-  elif [[ "$1" == disabled ]];then
+  elif [[ "$1" == "disabled" ]];then
     #list apps      |    only show     (          list of disabled apps                | remove match string  |   basename   )
     list_apps local | list_intersect "$(grep -rx 'disabled' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')"
     
-  elif [[ "$1" == uninstalled ]];then
+  elif [[ "$1" == "uninstalled" ]];then
     #list apps that have a status file matching "uninstalled"
     list_apps local | list_intersect "$(grep -rx 'uninstalled' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')"
     #also list apps that don't have a status file
     list_apps local | list_subtract "$(ls "${DIRECTORY}/data/status")"
     
-  elif [[ "$1" == have_status ]];then
+  elif [[ "$1" == "have_status" ]];then
     #list apps that have a status file
     list_apps local | list_intersect "$(ls "${DIRECTORY}/data/status")"
     
-  elif [[ "$1" == missing_status ]];then
+  elif [[ "$1" == "missing_status" ]];then
     #list apps that don't have a status file
     list_apps local | list_subtract "$(ls "${DIRECTORY}/data/status")"
     
-  elif [[ "$1" == cpu_installable ]];then
+  elif [[ "$1" == "cpu_installable" ]];then
     #list apps that can be installed on the device's OS architecture (32-bit or 64-bit)
     #find all apps that have install-XX script, install script, or a packages file
     find "${DIRECTORY}/apps" -type f \( -name "install-$arch" -o -name "install" -o -name "packages" \) | sed "s+${DIRECTORY}/apps/++g" | sed 's+/.*++g' | sort | uniq | grep -v template 
     
-  elif [[ "$1" == package ]];then
+  elif [[ "$1" == "package" ]];then
     #list apps that have a "packages" file
     find "${DIRECTORY}/apps" -type f -name "packages" | sed "s+/packages++g" | sed "s+${DIRECTORY}/apps/++g" | sort | uniq | grep -v template 
     
-  elif [[ "$1" == standard ]];then
+  elif [[ "$1" == "standard" ]];then
     #list apps that have scripts
     find "${DIRECTORY}/apps" -type f \( -name "install-32" -o -name "install-64" -o -name "install" -o -name "uninstall" \) | sed "s+${DIRECTORY}/apps/++g" | sed 's+/.*++g' | sort | uniq | grep -v template 
     
-  elif [[ "$1" == hidden ]];then
+  elif [[ "$1" == "hidden" ]];then
     #list apps that are hidden
     read_category_files | grep '|hidden' | awk -F'|' '{print $1}'
     
-  elif [[ "$1" == visible ]];then
+  elif [[ "$1" == "visible" ]];then
     #list apps that are in any other category but 'hidden', and aren't disabled
     read_category_files | grep -v '|hidden' | awk -F'|' '{print $1}' # | list_subtract "$(list_apps disabled)"
     
-  elif [[ "$1" == online ]];then
+  elif [[ "$1" == "online" ]];then
     #list apps that exist on the online git repo
     if [[ -d "${DIRECTORY}/update/pi-apps/apps" ]];then
       #if update folder exists, just use that
@@ -124,11 +124,11 @@ function list_apps() { # $1 can be: installed, uninstalled, corrupted, cpu_insta
       wget -qO- "https://github.com/Botspot/pi-apps/tree/master/apps" | grep 'title=".*" data-pjax=' -o | sed 's/title="//g' | sed 's/" data-pjax=//g' | grep -v template 
     fi
     
-  elif [[ "$1" == online_only ]];then
+  elif [[ "$1" == "online_only" ]];then
     #list apps that exist only on the git repo, and not locally
     list_apps online | list_subtract "$(list_apps local)"
     
-  elif [[ "$1" == local_only ]];then
+  elif [[ "$1" == "local_only" ]];then
     #list apps that exist only locally, and not on the git repo
     list_apps local | list_subtract "$(list_apps online)"
     
