@@ -16,8 +16,7 @@ if [[ ! -f "$DIRECTORY/api" ]]; then
 fi
 
 #run the pi-apps api script to get its functions
-source "$DIRECTORY/api" &>/dev/null
-if [[ "$?" != 0 ]]; then
+if ! source "$DIRECTORY/api" &>/dev/null; then
 	echo -e "${red}${bold}[!]${normal} ${light_red}Failed to source pi-apps api.${normal}" 1>&2
 	exit 1
 fi
