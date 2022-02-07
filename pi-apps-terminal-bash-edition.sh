@@ -4,7 +4,7 @@
 # shellcheck disable=SC2145,SC2199,SC2068,SC2013,SC1090,SC2034
 
 #directory variables
-if [ -z "$DIRECTORY" ]; then
+if [[ -z "$DIRECTORY" ]]; then
 	DIRECTORY="$HOME/pi-apps"
 fi
 
@@ -54,76 +54,76 @@ function about() {
 }
 
 function list_apps() { # $1 can be: installed, uninstalled, corrupted, cpu_installable, hidden, visible, online, online_only, local, local_only
-  if [ -z "$1" ] || [ "$1" == local ];then
+  if [[ -z "$1" ]] || [[ "$1" == local ]];then
     #list all apps
     grep -v template <(ls "${DIRECTORY}/apps")
     
-  elif [ "$1" == all ];then
+  elif [[ "$1" == all ]];then
     #combined list of apps, both online and local. Removes duplicate apps from the list.
     echo -e "$(list_apps local)\n$(list_apps online)" | sort | uniq
     
-  elif [ "$1" == installed ];then
+  elif [[ "$1" == installed ]];then
     #list apps      |   only show      (          list of installed apps                | remove match string  |   basename   )
     list_apps local | list_intersect "$(grep -rx 'installed' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')"
     
-  elif [ "$1" == corrupted ];then
+  elif [[ "$1" == corrupted ]];then
     #list apps      |only show         (          list of corrupted apps                | remove match string  |   basename   )
     list_apps local | list_intersect "$(grep -rx 'corrupted' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')"
     
-  elif [ "$1" == disabled ];then
+  elif [[ "$1" == disabled ]];then
     #list apps      |    only show     (          list of disabled apps                | remove match string  |   basename   )
     list_apps local | list_intersect "$(grep -rx 'disabled' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')"
     
-  elif [ "$1" == uninstalled ];then
+  elif [[ "$1" == uninstalled ]];then
     #list apps that have a status file matching "uninstalled"
     list_apps local | list_intersect "$(grep -rx 'uninstalled' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')"
     #also list apps that don't have a status file
     list_apps local | list_subtract "$(ls "${DIRECTORY}/data/status")"
     
-  elif [ "$1" == have_status ];then
+  elif [[ "$1" == have_status ]];then
     #list apps that have a status file
     list_apps local | list_intersect "$(ls "${DIRECTORY}/data/status")"
     
-  elif [ "$1" == missing_status ];then
+  elif [[ "$1" == missing_status ]];then
     #list apps that don't have a status file
     list_apps local | list_subtract "$(ls "${DIRECTORY}/data/status")"
     
-  elif [ "$1" == cpu_installable ];then
+  elif [[ "$1" == cpu_installable ]];then
     #list apps that can be installed on the device's OS architecture (32-bit or 64-bit)
     #find all apps that have install-XX script, install script, or a packages file
     find "${DIRECTORY}/apps" -type f \( -name "install-$arch" -o -name "install" -o -name "packages" \) | sed "s+${DIRECTORY}/apps/++g" | sed 's+/.*++g' | sort | uniq | grep -v template 
     
-  elif [ "$1" == package ];then
+  elif [[ "$1" == package ]];then
     #list apps that have a "packages" file
     find "${DIRECTORY}/apps" -type f -name "packages" | sed "s+/packages++g" | sed "s+${DIRECTORY}/apps/++g" | sort | uniq | grep -v template 
     
-  elif [ "$1" == standard ];then
+  elif [[ "$1" == standard ]];then
     #list apps that have scripts
     find "${DIRECTORY}/apps" -type f \( -name "install-32" -o -name "install-64" -o -name "install" -o -name "uninstall" \) | sed "s+${DIRECTORY}/apps/++g" | sed 's+/.*++g' | sort | uniq | grep -v template 
     
-  elif [ "$1" == hidden ];then
+  elif [[ "$1" == hidden ]];then
     #list apps that are hidden
     read_category_files | grep '|hidden' | awk -F'|' '{print $1}'
     
-  elif [ "$1" == visible ];then
+  elif [[ "$1" == visible ]];then
     #list apps that are in any other category but 'hidden', and aren't disabled
     read_category_files | grep -v '|hidden' | awk -F'|' '{print $1}' # | list_subtract "$(list_apps disabled)"
     
-  elif [ "$1" == online ];then
+  elif [[ "$1" == online ]];then
     #list apps that exist on the online git repo
-    if [ -d "${DIRECTORY}/update/pi-apps/apps" ];then
+    if [[ -d "${DIRECTORY}/update/pi-apps/apps" ]];then
       #if update folder exists, just use that
-      ls "${DIRECTORY}/update/pi-apps/apps" | grep . | grep -v template 
+      ls "${DIRECTORY}/update/pi-apps/apps" -I template 
     else
       #if update folder doesn't exist, then parse github HTML to get a list of online apps. Horrible idea, but it works!
-      wget -qO- "${repo_url}/tree/master/apps" | grep 'title=".*" data-pjax=' -o | sed 's/title="//g' | sed 's/" data-pjax=//g' | grep -v template 
+      wget -qO- "https://github.com/Botspot/pi-apps/tree/master/apps" | grep 'title=".*" data-pjax=' -o | sed 's/title="//g' | sed 's/" data-pjax=//g' | grep -v template 
     fi
     
-  elif [ "$1" == online_only ];then
+  elif [[ "$1" == online_only ]];then
     #list apps that exist only on the git repo, and not locally
     list_apps online | list_subtract "$(list_apps local)"
     
-  elif [ "$1" == local_only ];then
+  elif [[ "$1" == local_only ]];then
     #list apps that exist only locally, and not on the git repo
     list_apps local | list_subtract "$(list_apps online)"
     
@@ -158,7 +158,7 @@ function help() {
 	echo -e "\n${cyan}${bold}If you don't supply any option, pi-apps will start normally.${normal}"
 }
 
-while [ "$1" != "" ]; do
+while [[ "$1" != "" ]]; do
 	case $1 in
 		-h | --help | -help | help)
 			#show the help
@@ -167,7 +167,7 @@ while [ "$1" != "" ]; do
 		;;
 		install)
 			shift
-			if [ -d "$DIRECTORY/apps/$*" ]; then # if only one app is provided
+			if [[ -d "$DIRECTORY/apps/$*" ]]; then # if only one app is provided
 				"$DIRECTORY/manage" install "$@"
 				exit $?
 			else # multiple apps
@@ -183,7 +183,7 @@ while [ "$1" != "" ]; do
 		;;
 		remove|uninstall)
 			shift
-			if [ -d "$DIRECTORY/apps/$*" ]; then # if only one app provided
+			if [[ -d "$DIRECTORY/apps/$*" ]]; then # if only one app provided
 				"$DIRECTORY/manage" uninstall "$@"
 				exit $?
 			else #multiple app
@@ -199,7 +199,7 @@ while [ "$1" != "" ]; do
 		;;
 		reinstall)
 			shift
-			if [ -d "$DIRECTORY/apps/$*" ]; then # if only one app provided
+			if [[ -d "$DIRECTORY/apps/$*" ]]; then # if only one app provided
 				"$DIRECTORY/manage" uninstall "$@"
 				"$DIRECTORY/manage" install "$@"
 				exit $?
@@ -327,13 +327,13 @@ while [ "$1" != "" ]; do
 		info|details)
 			shift
 			
-			if [ -z "$*" ]; then
+			if [[ -z "$*" ]]; then
 				error "No app provided."
 			else
 				app_name="$*"
 			fi
 				
-			if ! [ -d "$DIRECTORY/apps/$app_name" ]; then
+			if ! [[ -d "$DIRECTORY/apps/$app_name" ]]; then
 				error "App not found."
 			fi
 			
@@ -342,26 +342,26 @@ while [ "$1" != "" ]; do
 			abovetext="
 - Current status: $(app_status "$app_name" | sed 's/corrupted/corrupted (installation failed)/g' | sed 's/disabled/disabled (installation is prevented on your system)/g')"
 			
-			if [ -f "${DIRECTORY}/apps/$app_name/website" ];then
+			if [[ -f "${DIRECTORY}/apps/$app_name/website" ]];then
 				#show website if it exists
 				abovetext="$abovetext
 - Website: $(head -n1 < "${DIRECTORY}/apps/$app_name/website")"
 
 			fi
 
-			if [ -z "$clicklist" ];then
+			if [[ -z "$clicklist" ]];then
 				clicklist="$(usercount)"
 			fi
 
 			usercount="$(echo "$clicklist" | grep " $app_name"'$' | awk '{print $1}' | head -n1)"
-			if [ -n "$usercount" ] && [ "$usercount" -gt 20 ];then
+			if [[ -n "$usercount" ]] && [[ "$usercount" -gt 20 ]];then
 				abovetext="$abovetext
 - $(printf %d "$usercount") users"
 
-				if [ "$usercount" -ge 1500 ] && [ "$usercount" -lt 10000 ];then
+				if [[ "$usercount" -ge 1500 ]] && [[ "$usercount" -lt 10000 ]];then
 				  #if a lot of users, add an exclamation point!
 				  abovetext="${abovetext}!"
-				elif [ "$usercount" -ge 10000 ];then
+				elif [[ "$usercount" -ge 10000 ]];then
 				  #if a crazy number of users, add two exclamation points!
 				  abovetext="${abovetext}!!"
 				fi
@@ -374,7 +374,7 @@ while [ "$1" != "" ]; do
 		;;
 		website)
 			shift
-			if [ -z "$*" ]; then
+			if [[ -z "$*" ]]; then
 				error "No app provided."
 			fi
 			website="$(cat "$DIRECTORY/apps/$@/website" 2>/dev/null)" || error "'$@' not found."
