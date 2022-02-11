@@ -50,7 +50,7 @@ That will install pi-apps if it isn't already installed, as well as removing the
 
 `website [app]` - print the link to the website of any app in pi-apps.
 
-`update [--yes|-y]` - update all apps and pi-apps itself.
+`update [-y|--yes]` - update all apps and pi-apps itself.
 
 `info/details [app]` - print the information of any app in pi-apps.
 
