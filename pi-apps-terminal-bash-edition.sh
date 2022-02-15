@@ -381,7 +381,12 @@ while [[ "$1" != "" ]]; do
 			if [[ -z "$*" ]]; then
 				error "No app provided."
 			fi
-			website="$(cat "$DIRECTORY/apps/$@/website" 2>/dev/null)" || error "'$@' not found."
+			app="$@"
+			if [[ ! -d "$DIRECTORY/apps/${app}" ]]; then
+				error "App '${app}' doesn't exist!"
+			fi
+	
+			website="$(cat "$DIRECTORY/apps/${app}/website" 2>/dev/null)" || error "Failed to read '${DIRECTORY}/apps/${app}'!"
 			echo -e "${bold}${inverted}$@${normal} - ${green}$website${normal}" 2>/dev/null 
 			exit 0
 		;;
