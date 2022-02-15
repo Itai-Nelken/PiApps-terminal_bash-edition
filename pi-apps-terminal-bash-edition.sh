@@ -1,31 +1,25 @@
 #!/bin/bash
 
 ### ignore some shellcheck warnings
-# shellcheck disable=SC2145,SC2199,SC2068
-
-#determine if host system is 64 bit arm64 or 32 bit armhf
-if [ "$(od -An -t x1 -j 4 -N 1 "$(readlink -f /sbin/init)")" = ' 02' ];then
-  arch=64
-elif [ "$(od -An -t x1 -j 4 -N 1 "$(readlink -f /sbin/init)")" = ' 01' ];then
-  arch=32
-else
-  echo -e "\e[1mFailed to detect OS CPU architecture! Something is very wrong.\e[0m"
-fi
+# shellcheck disable=SC2145,SC2199,SC2068,SC2013,SC1090,SC2034
 
 #directory variables
-PI_APPS_DIR="$HOME/pi-apps"
+if [[ -z "$DIRECTORY" ]]; then
+	DIRECTORY="$HOME/pi-apps"
+fi
 
-#check if '~/pi-apps/api' exists
-if [[ ! -f "$HOME/pi-apps/api" ]]; then
+#check if "$DIRECTORY/api" exists
+if [[ ! -f "$DIRECTORY/api" ]]; then
 	echo -e "\e[1;31m[!] \e[0;31mThe pi-apps \"api\" script doesn't exist!\e[0m"
+	echo -e "Please report this here: https://github.com/Itai-Nelken/PiApps-terminal_bash-edition/issues/new"	
 	exit 1
 fi
 
-
-#set the DIRECTORY variable for api script functions
-DIRECTORY="$PI_APPS_DIR"
 #run the pi-apps api script to get its functions
-source $PI_APPS_DIR/api &>/dev/null
+if ! source "$DIRECTORY/api" &>/dev/null; then
+	echo -e "${red}${bold}[!]${normal} ${light_red}Failed to source pi-apps api.${normal}" 1>&2
+	exit 1
+fi
 #unset the error function from the api script, we wan't to use our own defined later
 unset error
 
@@ -63,83 +57,112 @@ function about() {
     '
 }
 
+function list_apps() { # $1 can be: installed, uninstalled, corrupted, cpu_installable, hidden, visible, online, online_only, local, local_only
+  if [[ -z "$1" ]] || [[ "$1" == local ]];then
+    #list all apps
+    grep -v template <(ls "${DIRECTORY}/apps")
+    
+  elif [[ "$1" == all ]];then
+    #combined list of apps, both online and local. Removes duplicate apps from the list.
+    echo -e "$(list_apps local)\n$(list_apps online)" | sort | uniq
+    
+  elif [[ "$1" == "installed" ]];then
+    #list apps      |   only show      (          list of installed apps                | remove match string  |   basename   )
+    list_apps local | list_intersect "$(grep -rx 'installed' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')"
+    
+  elif [[ "$1" == "corrupted" ]];then
+    #list apps      |only show         (          list of corrupted apps                | remove match string  |   basename   )
+    list_apps local | list_intersect "$(grep -rx 'corrupted' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')"
+    
+  elif [[ "$1" == "disabled" ]];then
+    #list apps      |    only show     (          list of disabled apps                | remove match string  |   basename   )
+    list_apps local | list_intersect "$(grep -rx 'disabled' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')"
+    
+  elif [[ "$1" == "uninstalled" ]];then
+    #list apps that have a status file matching "uninstalled"
+    list_apps local | list_intersect "$(grep -rx 'uninstalled' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')"
+    #also list apps that don't have a status file
+    list_apps local | list_subtract "$(ls "${DIRECTORY}/data/status")"
+    
+  elif [[ "$1" == "have_status" ]];then
+    #list apps that have a status file
+    list_apps local | list_intersect "$(ls "${DIRECTORY}/data/status")"
+    
+  elif [[ "$1" == "missing_status" ]];then
+    #list apps that don't have a status file
+    list_apps local | list_subtract "$(ls "${DIRECTORY}/data/status")"
+    
+  elif [[ "$1" == "cpu_installable" ]];then
+    #list apps that can be installed on the device's OS architecture (32-bit or 64-bit)
+    #find all apps that have install-XX script, install script, or a packages file
+    find "${DIRECTORY}/apps" -type f \( -name "install-$arch" -o -name "install" -o -name "packages" \) | sed "s+${DIRECTORY}/apps/++g" | sed 's+/.*++g' | sort | uniq | grep -v template 
+    
+  elif [[ "$1" == "package" ]];then
+    #list apps that have a "packages" file
+    find "${DIRECTORY}/apps" -type f -name "packages" | sed "s+/packages++g" | sed "s+${DIRECTORY}/apps/++g" | sort | uniq | grep -v template 
+    
+  elif [[ "$1" == "standard" ]];then
+    #list apps that have scripts
+    find "${DIRECTORY}/apps" -type f \( -name "install-32" -o -name "install-64" -o -name "install" -o -name "uninstall" \) | sed "s+${DIRECTORY}/apps/++g" | sed 's+/.*++g' | sort | uniq | grep -v template 
+    
+  elif [[ "$1" == "hidden" ]];then
+    #list apps that are hidden
+    read_category_files | grep '|hidden' | awk -F'|' '{print $1}'
+    
+  elif [[ "$1" == "visible" ]];then
+    #list apps that are in any other category but 'hidden', and aren't disabled
+    read_category_files | grep -v '|hidden' | awk -F'|' '{print $1}' # | list_subtract "$(list_apps disabled)"
+    
+  elif [[ "$1" == "online" ]];then
+    #list apps that exist on the online git repo
+    if [[ -d "${DIRECTORY}/update/pi-apps/apps" ]];then
+      #if update folder exists, just use that
+      ls "${DIRECTORY}/update/pi-apps/apps" -I template 
+    else
+      #if update folder doesn't exist, then parse github HTML to get a list of online apps. Horrible idea, but it works!
+      wget -qO- "https://github.com/Botspot/pi-apps/tree/master/apps" | grep 'title=".*" data-pjax=' -o | sed 's/title="//g' | sed 's/" data-pjax=//g' | grep -v template 
+    fi
+    
+  elif [[ "$1" == "online_only" ]];then
+    #list apps that exist only on the git repo, and not locally
+    list_apps online | list_subtract "$(list_apps local)"
+    
+  elif [[ "$1" == "local_only" ]];then
+    #list apps that exist only locally, and not on the git repo
+    list_apps local | list_subtract "$(list_apps online)"
+    
+  else
+    error "list_apps(): unrecognized filter '$1'!"
+  fi
+}
+
 function help() {
 	echo -e "\n${white}${inverted}${bold}${light_blue}USAGE:${normal}"
 	echo '-------'
 	#echo -e "${underline}${light_green}./pi-apps-terminal-bash-edition.sh [option]${normal}"
-	echo -e "${white}${underline}${light_green}pi-apps [option]${normal}"
+	echo -e "${white}${underline}${light_green}pi-apps [option] [arguments]${normal}"
 	echo -e "\n${white}${inverted}${bold}${light_blue}Available options:${normal}"
 	echo '-------------------'
-	echo -e "${white}${dark_grey_background}install [appname]${normal}${white} - install any app available in pi-apps.\n"
-	echo -e "${white}${dark_grey_background}remove [appname]${normal}${white} - uninstall any app available in pi-apps. you can also use ${dark_grey_background}uninstall${normal}.\n"
-	echo -e "${white}${dark_grey_background}multi-install [app1] [app2]${normal}${white} - install multiple apps at the same time.\n"
-	echo -e "${white}${dark_grey_background}multi-uninstall [app1] [app2]${normal}${white} - uninstall multiple apps at the same time. you can also use ${dark_grey_background}multi-remove${normal}${white}.\n"
-	echo -e "${white}${dark_grey_background}reinstall [appname]${normal}${white} - reinstall any app available in pi-apps.\n"
-	echo -e "${white}${dark_grey_background}list-all${white}${normal}${white} - print all apps available in pi-apps.\n"
-	echo -e "${white}${dark_grey_background}list-installed${normal}${white} - print all installed apps.\n"
-	echo -e "${white}${dark_grey_background}list-uninstalled${normal}${white} - print all uninstalled apps.\n"
-	echo -e "${white}${dark_grey_background}list-corrupted${normal}${white} - print all apps with the corrupted statu (meaning they failed to install/uninstall).\n"
+	echo -e "${white}${dark_grey_background}install [app]${normal}${white} - install any app available in pi-apps.\n"
+	echo -e "${white}${dark_grey_background}uninstall/remove [app]${normal}${white} - uninstall any app available in pi-apps.\n"
+	echo -e "${white}${dark_grey_background}reinstall [app]${normal}${white} - reinstall any app available in pi-apps.\n"
+	echo -e "${white}${dark_grey_background}list-all [-d|--description]${white}${normal}${white} - print all apps available in pi-apps.\n"
+	echo -e "${white}${dark_grey_background}list-installed [-d|--description]${normal}${white} - print all installed apps.\n"
+	echo -e "${white}${dark_grey_background}list-uninstalled [-d|--description]${normal}${white} - print all uninstalled apps.\n"
+	echo -e "${white}${dark_grey_background}list-corrupted [-d|--description]${normal}${white} - print all apps failed to install/uninstall (are corrupted).\n"
 	echo -e "${white}${dark_grey_background}status [app]${normal}${white} - print the status of a app in pi-apps.\n"
-	echo -e "${white}${dark_grey_background}search '[appname]'${normal}${white} - search all apps available in pi-apps (case sensitive).\n"
-	echo -e "${white}${dark_grey_background}update${normal}${white} - update all pi-apps components.\n"
-	echo -e "${white}${dark_grey_background}update-apps${normal}${white} - update all pi-apps apps only.\n"
-	echo -e "${white}${dark_grey_background}website '[appname]'${normal}${white} - print the website of any app in pi-apps.\n"
-	echo -e "${white}${dark_grey_background}gui${normal}${white} - launch the pi-apps normally.\n"
+	echo -e "${white}${dark_grey_background}search [query]${normal}${white} - search all apps available in pi-apps.\n"
+	echo -e "${white}${dark_grey_background}website [app]${normal}${white} - print the link to the website of any app in pi-apps.\n"
+	echo -e "${white}${dark_grey_background}update [--yes|-y]${normal}${white} - update all apps and pi-apps itself.\n"
+	echo -e "${white}${dark_grey_background}info/details [app]${normal}${white} - print the information of any app in pi-apps.\n"
+	echo -e "${white}${dark_grey_background}gui${normal}${white} - launch pi-apps normally.\n"
 	echo -e "${white}${dark_grey_background}help${normal}${white} - show this help.${normal}"
 	echo '===================='
 
-	echo -e "\n${cyan}${bold}if you don't supply any option pi-apps will start normally.${normal}"
+	echo -e "\n${cyan}${bold}If you don't supply any option, pi-apps will start normally.${normal}"
 }
 
-function get-website() { 
-	dir="$PI_APPS_DIR/apps/${1}";
-	website="$(cat "${dir}/website")" || website_error=1
-}
-
-
-function list-all() {
-	for dir in $PI_APPS_DIR/apps/*/; do
-		dirname=$(basename "$dir")
-		if [[ "$dirname" != "template" ]]; then
-			if [[ -f $PI_APPS_DIR/apps/$dirname/install-${arch} ]] || [[ -f $PI_APPS_DIR/apps/$dirname/install ]]; then
-				echo -e "\n${bold}${inverted}${light_blue}$dirname${normal}"
-				DESC="${green}$(cat "$dir"/description)${normal}"
-				echo -e $DESC
-			fi
-		fi
-	done
-}
-
-#function search() {
-#	for dir in $PI_APPS_DIR/apps/*/; do
-#		dirname=$(basename "$dir")
-#		if [[ "$dirname" != "template" ]]; then
-#			#echo $dirname
-#			if [[ $dirname == "*$1*" ]]; then
-#				#echo "FIRST"
-#				echo -e "${bold}${inverted}${light_blue}$dirname${normal}"
-#				DESC="$(cat "$PI_APPS_DIR/apps/$dirname/description")"
-#				echo -e "${green}$DESC${normal}"
-#			elif grep -q "$1" "$PI_APPS_DIR/apps/$dirname/description" ; then
-#				#echo "SECOND"
-#				echo -e "${bold}${inverted}${light_blue}$dirname${normal}"
-#				DESC="$(cat "$PI_APPS_DIR/apps/$dirname/description")"
-#				echo -e "${green}$DESC${normal}"
-#			fi
-#		fi
-#	done
-#
-#}
-
-function search() { #search apps using pi-apps's api 'app_search' function
-		while read -r line; do
-			[[ -z "$line" ]] && continue
-			echo -e "${bold}${inverted}${light_blue}$line${normal}"
-    	echo -e "${green}$(cat $PI_APPS_DIR/apps/"$line"/description || echo "No description available")${normal}"
-		done < <(app_search $1)
-}
-
-while [ "$1" != "" ]; do
+while [[ "$1" != "" ]]; do
 	case $1 in
 		-h | --help | -help | help)
 			#show the help
@@ -148,106 +171,219 @@ while [ "$1" != "" ]; do
 		;;
 		install)
 			shift
-			for arg in "$@"; do
-				cmdflags+="$arg "
-			done
-			$PI_APPS_DIR/manage install "$(echo $cmdflags)"
-			exit $?
+			if [[ -d "$DIRECTORY/apps/$*" ]]; then # if only one app is provided
+				"$DIRECTORY/manage" install "$@"
+				exit $?
+			else # multiple apps
+				for arg in "$@"; do
+					cmdflags+="$arg\n"
+				done
+				# remove last newline ('\n')
+				args=${cmdflags%\\n}
+				#install apps
+				"$DIRECTORY/manage" multi-install "$(echo -e "$args")"
+				exit $?
+			fi
 		;;
-		multi-install)
-			shift
-			for arg in "$@"; do
-				cmdflags+="$arg\n"
-			done
-			#remove last \'n'
-			args=${cmdflags%\\n}
-			#install apps
-			$PI_APPS_DIR/manage multi-install "$(echo -e "$args")"
-			exit $?
-			;;
 		remove|uninstall)
 			shift
-			for arg in "$@"; do
-				cmdflags+="$arg "
-			done
-			$PI_APPS_DIR/manage uninstall "$(echo $cmdflags)"
-			exit $?
+			if [[ -d "$DIRECTORY/apps/$*" ]]; then # if only one app provided
+				"$DIRECTORY/manage" uninstall "$@"
+				exit $?
+			else #multiple app
+				for arg in "$@"; do
+					cmdflags+="$arg\n"
+				done
+				# remove last newline ('\n')
+				args=${cmdflags%\\n}
+				#uninstall apps
+				"$DIRECTORY/manage" multi-uninstall "$(echo -e "$args")"
+				exit $?
+			fi
 		;;
-		multi-remove | multi-uninstall)
-			shift
-			for arg in "$@"; do
-				cmdflags+="$arg\n"
-			done
-			args=${cmdflags%\\n}
-			#uninstall apps
-			$PI_APPS_DIR/manage multi-uninstall "$(echo -e "$args")"
-			exit $?
-			;;
 		reinstall)
 			shift
-			for arg in "$@"; do
-				cmdflags+="$arg "
-			done
-			cmdflags="${cmdflags::-1}"
-			$PI_APPS_DIR/manage uninstall "$cmdflags"
-			$PI_APPS_DIR/manage install "$cmdflags" || error "Failed to reinstall \"$cmdflags\"!"
-			exit $?
+			if [[ -d "$DIRECTORY/apps/$*" ]]; then # if only one app provided
+				"$DIRECTORY/manage" uninstall "$@"
+				"$DIRECTORY/manage" install "$@"
+				exit $?
+			else # multiple apps
+				for arg in "$@"; do
+					cmdflags+="$arg\n"
+				done
+				#remove last \'n'
+				args=${cmdflags%\\n}
+				"$DIRECTORY/manage" multi-uninstall "$(echo -e "$args")"
+				"$DIRECTORY/manage" multi-install "$(echo -e "$args")"
+				exit $?
+			fi
 		;;
 		list-installed)
+			shift
 			#list all the installed apps
 			#list_apps installed
-			ls "$PI_APPS_DIR/apps" | GREP_COLORS='ms=1;34' grep --color=always -x "$(grep -rx 'installed' "${PI_APPS_DIR}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!' | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
+			case $1 in
+				-d|--description) #print with descriptions
+					IFS=$'\n'
+					for app in $(list_apps cpu_installable | grep -x "$(grep -rx 'installed' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g'); do
+						echo -e "\n${bold}${inverted}${light_blue}$app${normal}"
+						echo -e "${green}$(cat "$DIRECTORY/apps/$app/description")${normal}"
+					done
+				;;
+				*)
+					IFS=$'\n'
+					for app in $(list_apps cpu_installable | grep -x "$(grep -rx 'installed' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g'); do
+						echo -e "\n${bold}${inverted}${light_blue}$app${normal}"
+					done
+				;;
+			esac
+			echo
 			exit $?
 		;;
 		list-uninstalled)
+			shift
 			#list all the uninstalled apps
 			#list_apps uninstalled
-			ls $PI_APPS_DIR | grep --color=always -x "$(grep -rx 'uninstalled' "${PI_APPS_DIR}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!' | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
-			ls $PI_APPS_DIR | grep --color=always -vx "$(ls "${PI_APPS_DIR}/data/status" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
+			case $1 in
+				-d|--description) #print with descriptions
+					IFS=$'\n'
+					for app in $(sort <(grep -rx 'uninstalled' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!'; list_apps cpu_installable | grep -vx "$(find "${DIRECTORY}/data/status" -type f -printf "%f\n" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')")); do
+						echo -e "\n${bold}${inverted}${light_blue}$app${normal}"
+						echo -e "${green}$(cat "$DIRECTORY/apps/$app/description")${normal}"
+					done
+				;;
+				*)
+					IFS=$'\n'
+					for app in $(sort <(grep -rx 'uninstalled' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!'; list_apps cpu_installable | grep -vx "$(find "${DIRECTORY}/data/status" -type f -printf "%f\n" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')")); do
+						echo -e "\n${bold}${inverted}${light_blue}$app${normal}"
+					done
+				;;
+			esac
+			echo  
 			exit $?
 		;;
 		list-corrupted)
+			shift
 			#list all the corrupted apps
 			#list_apps corrupted
-			ls $PI_APPS_DIR/apps | grep --color=always -x "$(grep -rx 'corrupted' "${PI_APPS_DIR}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!' | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g')"
+			case $1 in
+				-d|--description) #print with descriptions
+					IFS=$'\n'
+					for app in $(list_apps cpu_installable | grep -x "$(grep -rx 'corrupted' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g'); do
+						echo -e "\n${bold}${inverted}${light_blue}$app${normal}"
+						echo -e "${green}$(cat "$DIRECTORY/apps/$app/description")${normal}"
+					done
+				;;
+				*)
+					IFS=$'\n'
+					for app in $(list_apps cpu_installable | grep -x "$(grep -rx 'corrupted' "${DIRECTORY}/data/status" | awk -F: '{print $1}' | sed 's!.*/!!')" | sed -z 's/\n/\\|/g' | sed -z 's/\\|$/\n/g'); do
+						echo -e "\n${bold}${inverted}${light_blue}$app${normal}"
+					done
+				;;
+			esac
+			echo
 			exit $?
 		;;
 		list-all)
-			#list all the apps
-			list-all
+			shift
+			case $1 in
+				-d|--description) #print with descriptions
+					#list all the apps
+					IFS=$'\n'
+					for app in $(list_apps cpu_installable); do
+					     echo -e "\n${bold}${inverted}${light_blue}$app${normal}"
+					     echo -e "${green}$(cat "$DIRECTORY/apps/$app/description")${normal}"
+					done	
+				;;
+				*)
+					IFS=$'\n'
+					for app in $(list_apps cpu_installable); do
+					     echo -e "\n${bold}${inverted}${light_blue}$app${normal}"
+					done	
+				;;
+			esac
 			exit $?
 		;;
 		search)
 			shift
-			args="$*"
-			#search apps
-			search "$args"
+			arg="$*"
+			IFS=$'\n'
+			while read -r line; do
+				[[ -z "$line" ]] && continue
+				echo -e "\n\n${underline}$line${normal}\n" | grep -E -i "${arg}|" --color=always
+				echo -e "$(cat "$DIRECTORY/apps/$line/description" || echo "No description available")${normal}\n" | grep -E -i "${arg}|" --color=always
+			done < <(for app in $(grep -ilrw "$DIRECTORY/apps" -e "$@" --include description | awk '!seen[$0]++'; find "$DIRECTORY/apps" -maxdepth 1 -type d -name "$@" -printf '%f\n'); do grep -q "^/" <<< "$app" && basename "$(dirname "$app")" || echo "$app"; done | awk '!seen[$0]++')
 			exit $?
 		;;
-		update-apps)
-			#update all pi-apps apps
-			$PI_APPS_DIR/manage update-all
-			exit $?
-			;;
 		update)
-			#update all pi-apps
-			$PI_APPS_DIR/updater cli
+			#update pi-apps
+			shift
+			case $1 in
+				--yes|-y)
+					"$DIRECTORY/updater" cli-yes
+				;;
+				*)
+					"$DIRECTORY/updater" cli
+				;;
+			esac
 			exit $?
+		;;
+		info|details)
+			shift
+			
+			if [[ -z "$*" ]]; then
+				error "No app provided."
+			else
+				app_name="$*"
+			fi
+				
+			if ! [[ -d "$DIRECTORY/apps/$app_name" ]]; then
+				error "App not found."
+			fi
+			
+			description="$(cat "${DIRECTORY}/apps/$app_name/description" || echo 'Description unavailable')"
+
+			abovetext="
+- Current status: $(app_status "$app_name" | sed 's/corrupted/corrupted (installation failed)/g' | sed 's/disabled/disabled (installation is prevented on your system)/g')"
+			
+			if [[ -f "${DIRECTORY}/apps/$app_name/website" ]];then
+				#show website if it exists
+				abovetext="$abovetext
+- Website: $(head -n1 < "${DIRECTORY}/apps/$app_name/website")"
+
+			fi
+
+			if [[ -z "$clicklist" ]];then
+				clicklist="$(usercount)"
+			fi
+
+			usercount="$(echo "$clicklist" | grep " $app_name"'$' | awk '{print $1}' | head -n1)"
+			if [[ -n "$usercount" ]] && [[ "$usercount" -gt 20 ]];then
+				abovetext="$abovetext
+- $(printf %d "$usercount") users"
+
+				if [[ "$usercount" -ge 1500 ]] && [[ "$usercount" -lt 10000 ]];then
+				  #if a lot of users, add an exclamation point!
+				  abovetext="${abovetext}!"
+				elif [[ "$usercount" -ge 10000 ]];then
+				  #if a crazy number of users, add two exclamation points!
+				  abovetext="${abovetext}!!"
+				fi
+			fi
+			
+			status_green "\n\e[4m$app_name"
+			status "$abovetext\n"
+			echo -e "$description\n" 
+			exit 0
 		;;
 		website)
 			shift
-			[[ "$@" == "" ]] && error "'website' option passed, but no app provided!"
-			args="$*"
-			#print the website of a app
-			get-website "$args" 2>/dev/null
-			if [[ "$website_error" == "1" ]]; then
-				echo -e "${red}${bold}ERROR:${normal}${red} There is no app called ${light_red}'$@'${red}!${normal}"
-				exit 1
-			else
-				echo -e "${cyan}${inverted}$@'s website:${normal}"
-				echo -e "${bold}$website${normal}"
-				exit 0
+			if [[ -z "$*" ]]; then
+				error "No app provided."
 			fi
+			website="$(cat "$DIRECTORY/apps/$@/website" 2>/dev/null)" || error "'$@' not found."
+			echo -e "${bold}${inverted}$@${normal} - ${green}$website${normal}" 2>/dev/null 
+			exit 0
 		;;
 		status)
 			shift
@@ -267,8 +403,8 @@ while [ "$1" != "" ]; do
 			exit 0;
 		;;
 		gui)
-			#open pi-apps regularly
-			$PI_APPS_DIR/gui
+			# run pi-apps regularly
+			"$DIRECTORY/gui"
 			exit $?
 		;;
 		-v | --version | version | about | --about)
@@ -277,10 +413,11 @@ while [ "$1" != "" ]; do
 			exit 0
 		;;
 		*)
-			error "Unknown option '${light_blue}$1${red}'! run ${normal}${white}${dark_grey_background}pi-apps help${normal}${white}${red} to see all options."
+			error "Unknown option '${light_blue}$1${light_red}'! run ${normal}${white}${dark_grey_background}pi-apps help${normal}${white}${light_red} to see all options."
 		;;
 	esac
     shift
 done
-$PI_APPS_DIR/gui
+
+"$DIRECTORY/gui" # launch pi-apps regularly if no (known) arguments provided
 exit $?
