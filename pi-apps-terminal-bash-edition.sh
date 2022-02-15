@@ -386,7 +386,7 @@ while [[ "$1" != "" ]]; do
 				error "App '${app}' doesn't exist!"
 			fi
 	
-			website="$(cat "$DIRECTORY/apps/${app}/website" 2>/dev/null)" || error "Failed to read '${DIRECTORY}/apps/${app}'!"
+			website="$(cat "$DIRECTORY/apps/${app}/website" 2>/dev/null)" || error "Failed to read '${DIRECTORY}/apps/${app}/website'!"
 			echo -e "${bold}${inverted}$@${normal} - ${green}$website${normal}" 2>/dev/null 
 			exit 0
 		;;
