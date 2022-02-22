@@ -1,7 +1,7 @@
 #!/bin/bash
 
-### ignore some shellcheck warnings
-# shellcheck disable=SC2145,SC2199,SC2068,SC2013,SC1090,SC2034
+### ignore some shellcheck warnings ###
+# shellcheck disable=2034,2154,1091
 
 #directory variables
 if [[ -z "$DIRECTORY" ]]; then
@@ -50,7 +50,7 @@ function about() {
     ####################################
     # Pi-Apps terminal - bash edition  #
     # -------------------------------- #
-    #      By Itai-Nelken | 2021       #
+    #    By Itai-Nelken | 2021-2022    #
     # ================================ #
     #        Pi-Apps by Botspot        #
     ####################################
@@ -165,14 +165,21 @@ function help() {
 while [[ "$1" != "" ]]; do
 	case $1 in
 		-h | --help | -help | help)
-			#show the help
+			# show the help
 			help
 			exit 0
 		;;
 		install)
 			shift
 			if [[ -d "$DIRECTORY/apps/$*" ]]; then # if only one app is provided
-				"$DIRECTORY/manage" install "$*"
+				app="${*,,}"
+				for folder in $DIRECTORY/apps/; do
+					if [[ "$app" == "${folder,,}" ]]; then
+						app="$folder"
+						break
+					fi
+				done
+				"$DIRECTORY/manage" install "$app"
 				exit $?
 			else # multiple apps
 				for arg in "$@"; do
@@ -180,7 +187,7 @@ while [[ "$1" != "" ]]; do
 				done
 				# remove last newline ('\n')
 				args=${cmdflags%\\n}
-				#install apps
+				# install apps
 				"$DIRECTORY/manage" multi-install "$(echo -e "$args")"
 				exit $?
 			fi
@@ -386,13 +393,13 @@ while [[ "$1" != "" ]]; do
 			fi
 	
 			website="$(cat "$DIRECTORY/apps/${app}/website" 2>/dev/null)" || error "Failed to read '${DIRECTORY}/apps/${app}/website'!"
-			echo -e "${bold}${inverted}$@${normal} - ${green}$website${normal}" 2>/dev/null 
+			echo -e "${bold}${inverted}$*${normal} - ${green}$website${normal}" 2>/dev/null 
 			exit 0
 		;;
 		status)
 			shift
-			[[ "$@" == "" ]] && error "'status' option passed, but no app provided!"
-			status="$(app_status $@)"
+			[[ "$*" == "" ]] && error "'status' option passed, but no app provided!"
+			status="$(app_status "$*")"
 			[[ -z "$status" ]] && exit 1;
 
 			# installed=green, uninstalled=yellow, corrupted=red
@@ -403,7 +410,7 @@ while [[ "$1" != "" ]]; do
 				*) color="\e[1m" ;;
 			esac
 
-			echo -e "${bold}${inverted}$@${normal} - ${color}$status${normal}"
+			echo -e "${bold}${inverted}$*${normal} - ${color}$status${normal}"
 			exit 0;
 		;;
 		gui)
