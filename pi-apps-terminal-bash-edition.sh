@@ -24,21 +24,21 @@ fi
 unset error
 
 #text formatting variables
-red="\e[31m"
-green="\e[32m"
-yellow="\e[33m"
-blue="\e[34m"
-light_red="\e[91m"
-light_green="\e[92m"
-light_yellow="\e[93m"
-light_blue="\e[94m"
-cyan="\e[36m"
-white="\e[97m"
-dark_grey_background="\e[100m"
-bold="\e[1m"
-underline="\e[4m"
-inverted="\e[7m"
-normal="\e[0m"
+readonly red="\e[31m"
+readonly green="\e[32m"
+readonly yellow="\e[33m"
+readonly blue="\e[34m"
+readonly light_red="\e[91m"
+readonly light_green="\e[92m"
+readonly light_yellow="\e[93m"
+readonly light_blue="\e[94m"
+readonly cyan="\e[36m"
+readonly white="\e[97m"
+readonly dark_grey_background="\e[100m"
+readonly bold="\e[1m"
+readonly underline="\e[4m"
+readonly inverted="\e[7m"
+readonly normal="\e[0m"
 
 function error() {
   echo -e "${red}${bold}[!]${normal} ${light_red}$1${normal}" 1>&2
@@ -172,7 +172,7 @@ while [[ "$1" != "" ]]; do
 		install)
 			shift
 			if [[ -d "$DIRECTORY/apps/$*" ]]; then # if only one app is provided
-				"$DIRECTORY/manage" install "$@"
+				"$DIRECTORY/manage" install "$*"
 				exit $?
 			else # multiple apps
 				for arg in "$@"; do
@@ -188,7 +188,7 @@ while [[ "$1" != "" ]]; do
 		remove|uninstall)
 			shift
 			if [[ -d "$DIRECTORY/apps/$*" ]]; then # if only one app provided
-				"$DIRECTORY/manage" uninstall "$@"
+				"$DIRECTORY/manage" uninstall "$*"
 				exit $?
 			else #multiple app
 				for arg in "$@"; do
@@ -204,8 +204,8 @@ while [[ "$1" != "" ]]; do
 		reinstall)
 			shift
 			if [[ -d "$DIRECTORY/apps/$*" ]]; then # if only one app provided
-				"$DIRECTORY/manage" uninstall "$@"
-				"$DIRECTORY/manage" install "$@"
+				"$DIRECTORY/manage" uninstall "$*"
+				"$DIRECTORY/manage" install "$*"
 				exit $?
 			else # multiple apps
 				for arg in "$@"; do
