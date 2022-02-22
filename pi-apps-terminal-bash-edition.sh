@@ -381,8 +381,7 @@ while [[ "$1" != "" ]]; do
 			if [[ -z "$*" ]]; then
 				error "No app provided."
 			fi
-			app="$@"
-			if [[ ! -d "$DIRECTORY/apps/${app}" ]]; then
+			if [[ ! -d "$DIRECTORY/apps/$*" ]]; then
 				error "App '${app}' doesn't exist!"
 			fi
 	
