@@ -190,8 +190,6 @@ while [[ "$1" != "" ]]; do
 					"$DIRECTORY/manage" install "$app"
 					exit $?
 				else # fuzzy search
-					echo "Failed to find any app that matches your input ('$*')."
-					echoe "Performing a fuzzy search..."
 					# fill 'matches' with all search results
 					matches=()
 					for m in $(ls "$DIRECTORY/apps" | grep -i "$*"); do
@@ -199,6 +197,7 @@ while [[ "$1" != "" ]]; do
 					done
 					# if no matches found, assume  multiple apps are provided
 					if [[ ${#matches[@]} -eq 0 ]]; then
+						# multiple apps
 						for arg in "$@"; do
 							cmdflags+="$arg\n"
 						done
@@ -206,11 +205,12 @@ while [[ "$1" != "" ]]; do
 						args=${cmdflags%\\n}
 						# install apps
 						"$DIRECTORY/manage" multi-install "$(echo -e "$args")"
-				exit $?
+						exit $?
 					fi
 
 					# ask user if any of the matches are correct
-					echo "Found the following apps:"
+					echo "No apps found for your input ('$*')."
+					echo "But found the following apps:"
 					idx=1
 					for m in "${matches[@]}"; do
 						echo -e "\t$idx. '$m'"
