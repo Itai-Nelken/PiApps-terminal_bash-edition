@@ -195,7 +195,7 @@ while [[ "$1" != "" ]]; do
 					for m in $(ls "$DIRECTORY/apps" | grep -i "$*"); do
 						matches+=("$m")
 					done
-					# if no matches found, assume  multiple apps are provided
+					# if no matches found, assume multiple apps are provided
 					if [[ ${#matches[@]} -eq 0 ]]; then
 						# multiple apps
 						for arg in "$@"; do
@@ -218,6 +218,10 @@ while [[ "$1" != "" ]]; do
 					done
 					while true; do
 						read -rp "Enter the index of the correct app or 'q' to exit: " answer
+						if [[ "$answer" =~ [qQ] ]]; then
+							echo "EXiting"
+							exit 0
+						fi
 						if ! [[ "$answer" =~ ^[0-9]+$ ]]; then
 							echo "Input isn't a number! try again."
 							continue
