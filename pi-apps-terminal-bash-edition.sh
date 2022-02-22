@@ -173,14 +173,59 @@ while [[ "$1" != "" ]]; do
 			shift
 			if [[ -d "$DIRECTORY/apps/$*" ]]; then # if only one app is provided
 				app="${*,,}"
+				match=false
 				for folder in $DIRECTORY/apps/; do
 					if [[ "$app" == "${folder,,}" ]]; then
 						app="$folder"
+						match=true
 						break
 					fi
 				done
-				"$DIRECTORY/manage" install "$app"
-				exit $?
+				# disable 'dont use ls | grep' only for this if statement
+				# shellcheck disable=2010
+				if $match; then
+					"$DIRECTORY/manage" install "$app"
+					exit $?
+				else # fuzzy search
+					echo "Failed to find any app that matches your input ('$*')."
+					echoe "Performing a fuzzy search..."
+					# fill 'matches' with all search results
+					matches=()
+					for m in $(ls "$DIRECTORY/apps" | grep -i "$*"); do
+						matches+=("$m")
+					done
+					# check if no matches are found, and error and exit if true
+					if [[ ${#matches[@]} -eq 0 ]]; then
+						error "No matches found for '$*'"
+					fi
+
+					# ask user if any of the matches are correct
+					echo "Found the following apps:"
+					idx=1
+					for m in "${matches[@]}"; do
+						echo -e "\t$idx. '$m'"
+						idx=$((idx+1))
+					done
+					while true; do
+						read -rp "Enter the index of the correct app or 'q' to exit: " answer
+						if ! [[ "$answer" =~ ^[0-9]+$ ]]; then
+							echo "Input isn't a number! try again."
+							continue
+						fi
+						if [[ $answer -gt $idx ]]; then
+							echo "Input is larger than the available number of options! try again."
+							continue
+						elif [[ $answer -lt $idx ]]; then
+							echo "Input is smaller than the available number of options! try again."
+							continue
+						fi
+						break
+					done
+					# past here, $answer is a number between 1 and the amount of options.
+					app="${matches[$answer]}"
+					"$DIRECTORY/manage" install "$app"
+					exit $?
+				fi
 			else # multiple apps
 				for arg in "$@"; do
 					cmdflags+="$arg\n"
