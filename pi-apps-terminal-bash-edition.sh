@@ -172,6 +172,9 @@ while [[ "$1" != "" ]]; do
 		install)
 			shift
 			if [[ -d "$DIRECTORY/apps/$*" ]]; then # if only one app is provided
+				"$DIRECTORY/manage" install "$*"
+				exit $?
+			else
 				app="${*,,}"
 				match=false
 				for folder in $DIRECTORY/apps/; do
@@ -194,9 +197,16 @@ while [[ "$1" != "" ]]; do
 					for m in $(ls "$DIRECTORY/apps" | grep -i "$*"); do
 						matches+=("$m")
 					done
-					# check if no matches are found, and error and exit if true
+					# if no matches found, assume  multiple apps are provided
 					if [[ ${#matches[@]} -eq 0 ]]; then
-						error "No matches found for '$*'"
+						for arg in "$@"; do
+							cmdflags+="$arg\n"
+						done
+						# remove last newline ('\n')
+						args=${cmdflags%\\n}
+						# install apps
+						"$DIRECTORY/manage" multi-install "$(echo -e "$args")"
+				exit $?
 					fi
 
 					# ask user if any of the matches are correct
@@ -226,15 +236,6 @@ while [[ "$1" != "" ]]; do
 					"$DIRECTORY/manage" install "$app"
 					exit $?
 				fi
-			else # multiple apps
-				for arg in "$@"; do
-					cmdflags+="$arg\n"
-				done
-				# remove last newline ('\n')
-				args=${cmdflags%\\n}
-				# install apps
-				"$DIRECTORY/manage" multi-install "$(echo -e "$args")"
-				exit $?
 			fi
 		;;
 		remove|uninstall)
