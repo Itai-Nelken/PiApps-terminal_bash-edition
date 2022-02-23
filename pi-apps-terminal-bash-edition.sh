@@ -191,6 +191,7 @@ while [[ "$1" != "" ]]; do
 			help
 			exit 0
 		;;
+		# TODO: add multi-install back somehow
 		install)
 			shift
 			# if only one app is provided (it has a folder with its name)
