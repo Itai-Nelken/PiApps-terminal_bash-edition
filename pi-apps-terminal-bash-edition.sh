@@ -177,6 +177,8 @@ while [[ "$1" != "" ]]; do
 			else
 				app="${*,,}"
 				match=false
+				old_ifs=$IFS
+				IFS=$'\n'
 				for folder in $DIRECTORY/apps/; do
 					if [[ "$app" == "${folder,,}" ]]; then
 						app="$folder"
@@ -184,6 +186,8 @@ while [[ "$1" != "" ]]; do
 						break
 					fi
 				done
+				IFS=$old_ifs
+				unset old_ifs
 				# disable 'dont use ls | grep' only for this if statement
 				# shellcheck disable=2010
 				if $match; then
@@ -213,13 +217,13 @@ while [[ "$1" != "" ]]; do
 					echo "But found the following apps:"
 					idx=1
 					for m in "${matches[@]}"; do
-						echo -e "\t$idx. '$m'"
+						echo -e " $idx. '$m'"
 						idx=$((idx+1))
 					done
 					while true; do
 						read -rp "Enter the index of the correct app or 'q' to exit: " answer
 						if [[ "$answer" =~ [qQ] ]]; then
-							echo "EXiting"
+							echo "Exiting"
 							exit 0
 						fi
 						if ! [[ "$answer" =~ ^[0-9]+$ ]]; then
@@ -229,14 +233,14 @@ while [[ "$1" != "" ]]; do
 						if [[ $answer -gt $idx ]]; then
 							echo "Input is larger than the available number of options! try again."
 							continue
-						elif [[ $answer -lt $idx ]]; then
-							echo "Input is smaller than the available number of options! try again."
+						elif [[ $answer -lt 1 ]]; then
+							echo "Input is smaller than 1! try again."
 							continue
 						fi
 						break
 					done
 					# past here, $answer is a number between 1 and the amount of options.
-					app="${matches[$answer]}"
+					app="${matches[$((answer - 1))]}" # -1 because array indexes start at 0, but input starts at 1.
 					"$DIRECTORY/manage" install "$app"
 					exit $?
 				fi
