@@ -162,6 +162,28 @@ function help() {
 	echo -e "\n${cyan}${bold}If you don't supply any option, pi-apps will start normally.${normal}"
 }
 
+# $*: space separated list of apps to install
+function multi_install() {
+	for arg in "$@"; do
+		cmdflags+="$arg\n"
+	done
+	# remove last newline ('\n')
+	args=${cmdflags%\\n}
+	# install apps
+	"$DIRECTORY/manage" multi-install "$(echo -e "$args")"
+	# clean up
+	unset arg cmdflags argsSS
+	return $?
+}
+
+# $*: query
+# prints to stdout the list of matches separated by newlines
+function fuzzy_search() {
+	# disable 'dont use ls | grep' only for this function
+	# shellcheck disable=2010
+	list_apps cpu_installable | grep -i "$*"
+}
+
 while [[ "$1" != "" ]]; do
 	case $1 in
 		-h | --help | -help | help)
@@ -171,16 +193,21 @@ while [[ "$1" != "" ]]; do
 		;;
 		install)
 			shift
-			if [[ -d "$DIRECTORY/apps/$*" ]]; then # if only one app is provided
+			# if only one app is provided (it has a folder with its name)
+			if [[ -d "$DIRECTORY/apps/$*" ]]; then
 				"$DIRECTORY/manage" install "$*"
 				exit $?
 			else
+				# case insensitive search
 				app="${*,,}"
 				match=false
+				
+				# search for matches.
+				# if match is found, put the correct app name in '$folder' and break from the loop
 				old_ifs=$IFS
 				IFS=$'\n'
-				for folder in $DIRECTORY/apps/; do
-					if [[ "$app" == "${folder,,}" ]]; then
+				for folder in "$DIRECTORY"/apps/*; do
+					if [[ "$app" == "$(basename "${folder,,}")" ]]; then
 						app="$folder"
 						match=true
 						break
@@ -188,36 +215,37 @@ while [[ "$1" != "" ]]; do
 				done
 				IFS=$old_ifs
 				unset old_ifs
-				# disable 'dont use ls | grep' only for this if statement
-				# shellcheck disable=2010
+				
+				# if a match was found, install it and exit.
 				if $match; then
 					"$DIRECTORY/manage" install "$app"
 					exit $?
-				else # fuzzy search
+				else # else perform a fuzzy search
+					unset match
+
 					# fill 'matches' with all search results
 					matches=()
-					for m in $(ls "$DIRECTORY/apps" | grep -i "$*"); do
+					old_ifs=$IFS
+					IFS=$'\n'
+					for m in $(fuzzy_search "$@"); do
+						if [[ -z "$m" ]]; then
+							continue
+						fi
 						matches+=("$m")
 					done
-					# if no matches found, assume multiple apps are provided
+					IFS=$old_ifs
+					unset m old_ifs
+					# if no matches found, error and exit
 					if [[ ${#matches[@]} -eq 0 ]]; then
-						# multiple apps
-						for arg in "$@"; do
-							cmdflags+="$arg\n"
-						done
-						# remove last newline ('\n')
-						args=${cmdflags%\\n}
-						# install apps
-						"$DIRECTORY/manage" multi-install "$(echo -e "$args")"
-						exit $?
+						error "No matches found for app(s) '$*'!"
 					fi
 
 					# ask user if any of the matches are correct
 					echo "No apps found for your input ('$*')."
 					echo "But found the following apps:"
-					idx=1
+					idx=0
 					for m in "${matches[@]}"; do
-						echo -e " $idx. '$m'"
+						echo -e " $((idx +1 )). '$m'"
 						idx=$((idx+1))
 					done
 					while true; do
