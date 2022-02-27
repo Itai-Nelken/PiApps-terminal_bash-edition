@@ -209,7 +209,7 @@ while [[ "$1" != "" ]]; do
 				IFS=$'\n'
 				for folder in "$DIRECTORY"/apps/*; do
 					if [[ "$app" == "$(basename "${folder,,}")" ]]; then
-						app="$folder"
+						app="${folder##*/}"
 						match=true
 						break
 					fi
