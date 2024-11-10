@@ -3,26 +3,6 @@
 ### ignore some shellcheck warnings
 # shellcheck disable=SC2145,SC2199,SC2068,SC2013,SC1090,SC2034
 
-#directory variables
-if [[ -z "$DIRECTORY" ]]; then
-	DIRECTORY="$HOME/pi-apps"
-fi
-
-#check if "$DIRECTORY/api" exists
-if [[ ! -f "$DIRECTORY/api" ]]; then
-	echo -e "\e[1;31m[!] \e[0;31mThe pi-apps \"api\" script doesn't exist!\e[0m"
-	echo -e "Please report this here: https://github.com/Itai-Nelken/PiApps-terminal_bash-edition/issues/new"	
-	exit 1
-fi
-
-#run the pi-apps api script to get its functions
-if ! source "$DIRECTORY/api" &>/dev/null; then
-	echo -e "${red}${bold}[!]${normal} ${light_red}Failed to source pi-apps api.${normal}" 1>&2
-	exit 1
-fi
-#unset the error function from the api script, we wan't to use our own defined later
-unset error
-
 #text formatting variables
 readonly red="\e[31m"
 readonly green="\e[32m"
@@ -39,6 +19,26 @@ readonly bold="\e[1m"
 readonly underline="\e[4m"
 readonly inverted="\e[7m"
 readonly normal="\e[0m"
+
+#directory variables
+if [[ -z "$DIRECTORY" ]]; then
+	DIRECTORY="$HOME/pi-apps"
+fi
+
+#check if "$DIRECTORY/api" exists
+if [[ ! -f "$DIRECTORY/api" ]]; then
+	echo -e "${bold}${red}[!] \e[0;31mThe pi-apps \"api\" script doesn't exist!${normal}"
+	echo -e "Please report this here: https://github.com/Itai-Nelken/PiApps-terminal_bash-edition/issues/new"	
+	exit 1
+fi
+
+#run the pi-apps api script to get its functions
+if ! source "$DIRECTORY/api" &>/dev/null; then
+	echo -e "${red}${bold}[!]${normal} ${light_red}Failed to source pi-apps api.${normal}" 1>&2
+	exit 1
+fi
+#unset the error function from the api script, we wan't to use our own defined later
+unset error
 
 function error() {
   echo -e "${red}${bold}[!]${normal} ${light_red}$1${normal}" 1>&2
